@@ -211,8 +211,10 @@ scp -i key.pem ubuntu@203.0.113.10:/opt/cloud-xray-exit/vless-uri.txt ./vless-ur
 Manage the node any time from the server:
 
 ```bash
-sudo raylink exit                 # re-run / update (safe, idempotent)
+sudo raylink exit                 # re-run / update
 sudo raylink exit --health-check  # run a health check now
+sudo raylink doctor               # diagnose the node
+sudo raylink info                 # show node details
 sudo raylink version
 ```
 
@@ -521,8 +523,10 @@ scp -i key.pem ubuntu@203.0.113.10:/opt/cloud-xray-exit/vless-uri.txt ./vless-ur
 您可以在服务器上随时通过以下 CLI 命令对节点进行更新或自检：
 
 ```bash
-sudo raylink exit                 # 重新运行或更新（操作具备幂等性，可安全重复执行）
+sudo raylink exit                 # 重新运行或更新
 sudo raylink exit --health-check  # 手动触发一次节点状态自愈与检测
+sudo raylink doctor               # 诊断节点
+sudo raylink info                 # 查看节点信息
 sudo raylink version              # 查看当前 RayLink 的版本号
 ```
 
@@ -633,8 +637,8 @@ sudo firewall-cmd --list-ports
 以下是按操作系统划分的主流客户端推荐列表，供您选择使用。每个客户端均标注了支持的连接类型（Universal、Clash 或 VLESS 链接）。
 
 - **Windows**
-  - [v2rayN](https://github.com/2dust/v2rayN/releases) — 支持 **Universal**、**VLESS**
-  - [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev/releases) — 支持 **Clash**
+  - [v2rayN](https://github.com/2dust/v2rayN) — 支持 **Universal**、**VLESS**
+  - [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) — 支持 **Clash**
   - [FlClash](https://github.com/flclash/FlClash) — 支持 **Clash**、**Universal**
   - [Hiddify](https://github.com/hiddify/hiddify-next) — 支持 **Universal**、**VLESS**
 
