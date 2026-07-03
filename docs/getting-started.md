@@ -328,13 +328,6 @@ sudo firewall-cmd --permanent --add-port=8080/tcp
 sudo firewall-cmd --reload
 ```
 
-Verify:
-
-```bash
-sudo firewall-cmd --list-ports
-# expected: 443/tcp 8080/tcp
-```
-
 ### C. Recommended Clients by OS
 
 Below is a list of recommended mainstream clients categorized by operating system, along with the link types they support (Universal, Clash, or VLESS).
@@ -641,13 +634,6 @@ sudo systemctl is-active firewalld
 sudo firewall-cmd --permanent --add-port=443/tcp
 sudo firewall-cmd --permanent --add-port=8080/tcp
 sudo firewall-cmd --reload
-```
-
-运行以下命令验证策略是否已成功应用：
-
-```bash
-sudo firewall-cmd --list-ports
-# 预期输出应包含: 443/tcp 8080/tcp
 ```
 
 ### C. 各系统主流客户端推荐
