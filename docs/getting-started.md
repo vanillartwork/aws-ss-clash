@@ -1,6 +1,6 @@
 # Getting Started
 
-[English](#Guige) · [中文](#指南)
+[English](#Guide) · [中文](#指南)
 
 This guide takes you from a bare Linux server to a working node and imported
 client. Every step here is shared by both node types — for node-specific options
