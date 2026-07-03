@@ -498,13 +498,13 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 
 对于 Clash/Mihomo 系列客户端，导入 Clash 订阅链接后，请在代理组中将 `GLOBAL` 设置为您所部署的节点，并开启系统代理（System Proxy）或 TUN 模式。
 
-在服务器终端上查看订阅链接的方法（以出口节点为例，中转节点请查看 `/opt/cloud-xray-relay` 对应目录）：
+在服务器终端上查看订阅链接的方法（以出口节点为例，中转节点请替换对应目录为 `/opt/cloud-xray-relay`）：
 
 ```bash
 sudo cat /opt/cloud-xray-exit/vless-uri.txt
 ```
 
-在服务器终端上查看 VLESS 链接的方法（以出口节点为例，中转节点请查看 `/opt/cloud-xray-relay` 对应目录）：
+在服务器终端上查看 VLESS 链接的方法（以出口节点为例，中转节点请替换对应目录为 `/opt/cloud-xray-relay`）：
 
 ```bash
 sudo cat /opt/cloud-xray-exit/vless-uri.txt
