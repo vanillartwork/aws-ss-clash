@@ -43,7 +43,7 @@ When creating the instance:
 - Allow inbound TCP ports `22`, `443`, and `8080` in the security group (see [1.3](#13-configure-the-firewall)).
 - Assign a public IPv4 (or IPv6) address.
 
-AWS provides the private key as a `.pem` file to download once — keep it safe, as
+Cloud providers usually provide the private key as a file to download once — keep it safe, as
 it cannot be downloaded again.
 
 #### 1.2 Create an SSH Key Pair
@@ -52,8 +52,8 @@ SSH authentication relies on public-key cryptography: a **private key** that
 remains secure on your local machine, and a corresponding **public key** deployed
 to the server.
 
-Some providers generate a key pair for you during instance creation (AWS gives
-you a `.pem` private key to download). Others ask you to upload an existing
+Some providers generate a key pair for you during instance creation (for example AWS gives
+you a private key to download). Others ask you to upload an existing
 public key. If you do not have a key pair yet, generate one locally — the full
 walkthrough is in [Appendix A](#a-ssh-key-generation).
 
@@ -62,8 +62,8 @@ SSH clients pick up automatically:
 
 | Algorithm | Private key | Public key |
 |---|---|---|
-| ED25519 (preferred) | `id_ed25519` | `id_ed25519.pub` |
-| RSA (≥ 2048-bit) | `id_rsa` | `id_rsa.pub` |
+| ED25519 | `id_ed25519` | `id_ed25519.pub` |
+| RSA | `id_rsa` | `id_rsa.pub` |
 | ECDSA | `id_ecdsa` | `id_ecdsa.pub` |
 
 Only the `.pub` public key is uploaded to your provider. **Never share the
@@ -89,7 +89,7 @@ Notes:
   disable subscription hosting entirely after initial client setup.
 - **Relay configuration**: In a relay architecture, the exit node only needs to
   open its proxy port (default `443`) to the relay node's IP address — see
-  [relay.md](relay.md).
+  [relay](relay.md).
 
 > [!WARNING]
 > **Common firewall pitfall.** Opening ports in the cloud console is not always
@@ -160,11 +160,11 @@ Subscription URL. See [relay](relay.md) for other ways to supply the upstream.
 
 The installer serves three link types. Use the one your client supports (see [Appendix C](#c-recommended-clients-by-os) for platform-specific client recommendations):
 
-| Link | Endpoint | Description |
-|---|---|---|
-| **Universal Subscription URL** | `http://SERVER:8080/sub/TOKEN` | Auto-negotiating subscription format for compatible multi-protocol clients (see [Appendix C](#c-recommended-clients-by-os)). |
-| **Clash Subscription URL** | `http://SERVER:8080/sub/TOKEN/clash.yaml` | Clash-family configuration format for Clash/Mihomo clients (see [Appendix C](#c-recommended-clients-by-os)). |
-| **Direct VLESS Link** | `vless://…` | Hand-import connection string for single-node configurations (no subscription needed). |
+| Link | Endpoint |
+|---|---|
+| **Universal Subscription URL** | `http://SERVER:8080/sub/TOKEN` |
+| **Clash Subscription URL** | `http://SERVER:8080/sub/TOKEN/clash.yaml` |
+| **Direct VLESS Link** | `vless://…` |
 
 When HTTP subscription is enabled, the installer prints the two subscription
 URLs; when it is disabled, it prints the Direct VLESS Link instead.
@@ -181,8 +181,7 @@ sudo cat /opt/cloud-xray-exit/vless-uri.txt
 
 > [!NOTE]
 > The Clash YAML and the VLESS URI intentionally keep their own field names
-> (`network: tcp`, `reality-opts.public-key`, `type=tcp`, `pbk=…`). This is
-> expected — do not rename them to the Xray JSON field names.
+> This is expected — do not rename them.
 
 ### 4. Download Configuration
 
@@ -318,30 +317,30 @@ sudo firewall-cmd --list-ports
 
 ### C. Recommended Clients by OS
 
-Below is a list of recommended mainstream clients categorized by operating system, along with the link types they support (Universal, Clash, or Direct VLESS Link).
+Below is a list of recommended mainstream clients categorized by operating system, along with the link types they support (Universal, Clash, or VLESS).
 
 - **Windows**
-  - [v2rayN](https://github.com/2dust/v2rayN) — Supports **Universal**, **Direct VLESS Link**
+  - [v2rayN](https://github.com/2dust/v2rayN) — Supports **Universal**, **VLESS**
   - [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) — Supports **Clash**
   - [FlClash](https://github.com/flclash/FlClash) — Supports **Clash**, **Universal**
-  - [Hiddify](https://github.com/hiddify/hiddify-next) — Supports **Universal**, **Direct VLESS Link**
+  - [Hiddify](https://github.com/hiddify/hiddify-next) — Supports **Universal**, **VLESS**
 
 - **Android**
-  - [v2rayNG](https://github.com/2dust/v2rayNG) — Supports **Universal**, **Direct VLESS Link**
-  - [Hiddify](https://github.com/hiddify/hiddify-next) — Supports **Universal**, **Direct VLESS Link**
+  - [v2rayNG](https://github.com/2dust/v2rayNG) — Supports **Universal**, **VLESS**
+  - [Hiddify](https://github.com/hiddify/hiddify-next) — Supports **Universal**, **VLESS**
   - [FlClash](https://github.com/flclash/FlClash) — Supports **Clash**, **Universal**
-  - [NekoBox](https://github.com/MatsuriDayo/NekoBoxForAndroid) — Supports **Universal**, **Direct VLESS Link**
+  - [NekoBox](https://github.com/MatsuriDayo/NekoBoxForAndroid) — Supports **Universal**, **VLESS**
 
 - **iOS / macOS & tvOS**
-  - [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) — Supports **Universal**, **Direct VLESS Link**
-  - [Anywhere](https://github.com/NodePassProject/Anywhere) — Supports **Universal**, **Direct VLESS Link**
-  - [Egern](https://apps.apple.com/us/app/egern/id1616105820) — Supports **Universal**, **Direct VLESS Link**
+  - [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) — Supports **Universal**, **VLESS**
+  - [Anywhere](https://github.com/NodePassProject/Anywhere) — Supports **Universal**, **VLESS**
+  - [Egern](https://apps.apple.com/us/app/egern/id1616105820) — Supports **Universal**, **VLESS**
 
 ---
 
 ## 指南
 
-本指南将协助您在一台全新的 Linux 服务器上完成节点部署与客户端配置导入。本教程中的步骤适用于所有类型的节点，针对特定节点类型的详细选项请参阅 [exit.md](exit.md) 与 [relay](relay.md)。
+本指南将协助您在一台全新的 Linux 服务器上完成节点部署与客户端配置导入。本教程中的步骤适用于所有类型的节点，针对特定节点类型的详细选项请参阅 [exit](exit.md) 与 [relay](relay.md)。
 
 本文所有示例均使用文档保留 IP `203.0.113.10`，请在实际操作中替换为您服务器的公网 IP 地址。
 
@@ -369,20 +368,20 @@ Below is a list of recommended mainstream clients categorized by operating syste
 - 关联或分配一个公网 IPv4（或 IPv6）地址。
 
 > [!IMPORTANT]
-> AWS 生成的私钥文件（`.pem` 格式）仅在创建时提供一次下载机会，请妥善保管。
+> 云服务商生成的私钥文件通常仅在创建时提供一次下载机会，请妥善保管。
 
 #### 1.2 创建 SSH 密钥对
 
 SSH 服务采用非对称加密方式进行身份验证。它由一对密钥组成：**私钥**安全存放在您的本地计算机上，**公钥**则配置在目标云服务器中。
 
-某些云服务商在实例初始化时会自动为您生成密钥对（例如 AWS 会引导您下载私钥的 `.pem` 文件），而有些服务商则要求您手动上传已有的公钥。若您尚未创建密钥对，请参考 [附录 A](#a-ssh-密钥生成) 进行本地生成。
+某些云服务商在实例初始化时会自动为您生成密钥对（例如 AWS 会引导您下载私钥文件），而有些服务商则要求您手动上传已有的公钥。若您尚未创建密钥对，请参考 [附录 A](#a-ssh-密钥生成) 进行本地生成。
 
 默认情况下，密钥对会保存在本地的 `~/.ssh` 目录下。以下是常用的标准密钥文件名，大多数 SSH 客户端均可自动识别并调用：
 
 | 算法 | 私钥文件名 | 公钥文件名 |
 |---|---|---|
-| ED25519 (推荐) | `id_ed25519` | `id_ed25519.pub` |
-| RSA (≥ 2048-bit) | `id_rsa` | `id_rsa.pub` |
+| ED25519 | `id_ed25519` | `id_ed25519.pub` |
+| RSA | `id_rsa` | `id_rsa.pub` |
 | ECDSA | `id_ecdsa` | `id_ecdsa.pub` |
 
 您只需将 `.pub` 后缀的公钥内容上传或粘贴至云服务商控制台。**在任何情况下都切勿向外界泄露您的私钥文件。**
@@ -460,14 +459,14 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 
 部署完成后，RayLink 会生成以下三种链接，请根据您所使用的代理软件客户端进行选择（推荐客户端详见 [附录 C](#c-各系统主流客户端推荐)）：
 
-| 订阅链接类型 | 链接形式 | 功能与说明 |
-|---|---|---|
-| **Universal Subscription URL** | `http://SERVER:8080/sub/TOKEN` | 自动协商订阅格式，支持常规订阅导入的跨平台客户端（详见 [附录 C](#c-各系统主流客户端推荐)） |
-| **Clash Subscription URL** | `http://SERVER:8080/sub/TOKEN/clash.yaml` | Clash YAML 格式，仅限 Clash/Mihomo 核心的客户端（详见 [附录 C](#c-各系统主流客户端推荐)） |
-| **Direct VLESS Link** | `vless://…` | VLESS 节点链接，用于在客户端中手动导入单个节点（不依赖订阅服务） |
+| 订阅链接类型 | 链接形式 |
+|---|---|
+| **Universal Subscription URL** | `http://SERVER:8080/sub/TOKEN` |
+| **Clash Subscription URL** | `http://SERVER:8080/sub/TOKEN/clash.yaml` |
+| **Direct VLESS Link** | `vless://…` |
 
 - **启用 HTTP 订阅时**：部署程序将同时提供 **Universal** 和 **Clash** 订阅链接；
-- **禁用 HTTP 订阅时**：程序将仅输出 **Direct VLESS Link**。
+- **禁用 HTTP 订阅时**：程序将仅输出 **VLESS** 链接。
 
 对于 Clash/Mihomo 系列客户端，导入 Clash 订阅链接后，请在代理组中将 `GLOBAL` 设置为您所部署的节点，并开启系统代理（System Proxy）或 TUN 模式。
 
@@ -478,7 +477,7 @@ sudo cat /opt/cloud-xray-exit/vless-uri.txt
 ```
 
 > [!NOTE]
-> Clash 配置文件及 VLESS URI 连接串将保留其专用的字段命名规范（如 `network: tcp`、`reality-opts.public-key`、`type=tcp`、`pbk=...` 等）。这些格式均由各大客户端标准定义，请勿将其手动修改为 Xray JSON 配置的命名格式。
+> Clash 配置文件及 VLESS URI 连接串将保留其专用的字段命名规范请勿修改配置的命名格式。
 
 ### 4. 下载配置文件
 
@@ -494,7 +493,7 @@ scp -i [KEY_FILE] [USERNAME]@[SERVER_PUBLIC_IP]:[REMOTE_PATH] [LOCAL_PATH]
 scp -i key.pem ubuntu@203.0.113.10:/opt/cloud-xray-exit/clash.yaml ./raylink-clash.yaml
 ```
 
-示例：下载包含 Direct VLESS 链接的文件至当前目录：
+示例：下载包含 VLESS 链接的文件至当前目录：
 
 ```bash
 scp -i key.pem ubuntu@203.0.113.10:/opt/cloud-xray-exit/vless-uri.txt ./vless-uri.txt
@@ -607,21 +606,21 @@ sudo firewall-cmd --list-ports
 
 ### C. 各系统主流客户端推荐
 
-以下是按操作系统划分的主流客户端推荐列表，供您选择使用。每个客户端均标注了支持的连接类型（通用订阅、Clash 订阅或 VLESS 节点链接）。
+以下是按操作系统划分的主流客户端推荐列表，供您选择使用。每个客户端均标注了支持的连接类型（Universal、Clash 或 VLESS 链接）。
 
 - **Windows 系统**
-  - [v2rayN](https://github.com/2dust/v2rayN) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
-  - [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) — 支持 **Clash Subscription URL**
-  - [FlClash](https://github.com/flclash/FlClash) — 支持 **Clash Subscription URL**、**通用订阅 (Universal)**
-  - [Hiddify](https://github.com/hiddify/hiddify-next) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
+  - [v2rayN](https://github.com/2dust/v2rayN) — 支持 **Universal**、**VLESS**
+  - [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) — 支持 **Clash**
+  - [FlClash](https://github.com/flclash/FlClash) — 支持 **Clash**、**Universal**
+  - [Hiddify](https://github.com/hiddify/hiddify-next) — 支持 **Universal**、**VLESS**
 
-- **Android (安卓) 系统**
-  - [v2rayNG](https://github.com/2dust/v2rayNG) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
-  - [Hiddify](https://github.com/hiddify/hiddify-next) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
-  - [FlClash](https://github.com/flclash/FlClash) — 支持 **Clash Subscription URL**、**通用订阅 (Universal)**
-  - [NekoBox](https://github.com/MatsuriDayo/NekoBoxForAndroid) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
+- **安卓系统**
+  - [v2rayNG](https://github.com/2dust/v2rayNG) — 支持 **Universal**、**VLESS**
+  - [Hiddify](https://github.com/hiddify/hiddify-next) — 支持 **Universal**、**VLESS**
+  - [FlClash](https://github.com/flclash/FlClash) — 支持 **Clash**、**Universal**
+  - [NekoBox](https://github.com/MatsuriDayo/NekoBoxForAndroid) — 支持 **Universal**、**VLESS**
 
-- **iOS / macOS & tvOS (苹果生态)**
-  - [Shadowrocket (小火箭)](https://apps.apple.com/app/shadowrocket/id932747118) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
-  - [Anywhere](https://github.com/NodePassProject/Anywhere) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
-  - [Egern](https://apps.apple.com/us/app/egern/id1616105820) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
+- **iOS / macOS & tvOS**
+  - [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) — 支持 **Universal**、**VLESS**
+  - [Anywhere](https://github.com/NodePassProject/Anywhere) — 支持 **Universal**、**VLESS**
+  - [Egern](https://apps.apple.com/us/app/egern/id1616105820) — 支持 **Universal**、**VLESS**
