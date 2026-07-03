@@ -153,8 +153,10 @@ secondary (relay) server:
 curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env UPSTREAM_SUBSCRIPTION_URL='http://203.0.113.10:8080/sub/TOKEN' bash -s -- relay
 ```
 
-Replace `203.0.113.10:8080/sub/TOKEN` with your exit's actual Universal
-Subscription URL. See [relay](relay.md) for other ways to supply the upstream.
+> [!NOTE]
+> A Relay Node is an optional advanced feature. Standard users only need to deploy an Exit Node.
+> Replace `203.0.113.10:8080/sub/TOKEN` with your exit's actual Universal
+> Subscription URL. See [relay](relay.md) for other ways to supply the upstream.
 
 ### 3. Import into Clients
 
@@ -468,7 +470,7 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 ```
 
 > [!NOTE]
-> 请将示例中的 `203.0.113.10:8080/sub/TOKEN` 替换为您出口服务器上实际生成的 Universal 订阅链接。关于定义上游出口参数的其他高级方案，请参阅 [relay](relay.md)。
+> 中转节点为高级可选功能，常规用户仅需部署出口节点即可。运行上面命令时请将示例中的 `203.0.113.10:8080/sub/TOKEN` 替换为您出口服务器上实际生成的 Universal 订阅链接。关于定义上游出口参数的其他高级方案，请参阅 [relay](relay.md)。
 
 ### 3. 导入客户端配置
 
