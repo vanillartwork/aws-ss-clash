@@ -155,19 +155,23 @@ build_metrics_block() {
   fi
 }
 
-write_xray_config() {
-  mkdir -p "${XRAY_CONFIG_DIR}"
-
+# Render the exit Xray config to a path (default: the live config). Used both by
+# write_xray_config and by the doctor drift check (rendering to a temp file).
+render_exit_xray_config() {
+  local out="${1:-${XRAY_CONFIG}}"
   TFO_JSON_VALUE="false"
   if is_true "${ENABLE_TFO}"; then
     TFO_JSON_VALUE="true"
   fi
   build_metrics_block
-
   render_template "${RAYLINK_TEMPLATES}/xray/server.json.tmpl" \
     METRICS_BLOCK LISTEN_ADDRESS PORT UUID FLOW TFO_JSON_VALUE REALITY_DEST REALITY_SERVER_NAME PRIVATE_KEY SHORT_ID \
-    > "${XRAY_CONFIG}"
+    > "${out}"
+}
 
+write_xray_config() {
+  mkdir -p "${XRAY_CONFIG_DIR}"
+  render_exit_xray_config "${XRAY_CONFIG}"
   chown root:"${XRAY_SERVICE_GROUP}" "${XRAY_CONFIG}" 2>/dev/null || true
   chmod 640 "${XRAY_CONFIG}"
 }
@@ -176,21 +180,23 @@ write_xray_config() {
 # VLESS Reality outbound to the upstream exit, with routing that sends all
 # inbound traffic to the upstream. Inbound params reuse the standard variable
 # names (UUID, PRIVATE_KEY, ...); upstream params use UPSTREAM_* variables.
-write_relay_xray_config() {
-  mkdir -p "${XRAY_CONFIG_DIR}"
-
+render_relay_xray_config() {
+  local out="${1:-${XRAY_CONFIG}}"
   TFO_JSON_VALUE="false"
   if is_true "${ENABLE_TFO}"; then
     TFO_JSON_VALUE="true"
   fi
   build_metrics_block
-
   render_template "${RAYLINK_TEMPLATES}/xray/relay-server.json.tmpl" \
     METRICS_BLOCK LISTEN_ADDRESS PORT UUID FLOW TFO_JSON_VALUE REALITY_DEST REALITY_SERVER_NAME PRIVATE_KEY SHORT_ID \
     UPSTREAM_ADDRESS UPSTREAM_PORT UPSTREAM_UUID UPSTREAM_FLOW UPSTREAM_SERVER_NAME \
     UPSTREAM_FINGERPRINT UPSTREAM_PUBLIC_KEY UPSTREAM_SHORT_ID \
-    > "${XRAY_CONFIG}"
+    > "${out}"
+}
 
+write_relay_xray_config() {
+  mkdir -p "${XRAY_CONFIG_DIR}"
+  render_relay_xray_config "${XRAY_CONFIG}"
   chown root:"${XRAY_SERVICE_GROUP}" "${XRAY_CONFIG}" 2>/dev/null || true
   chmod 640 "${XRAY_CONFIG}"
 }

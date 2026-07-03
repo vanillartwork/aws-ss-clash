@@ -31,6 +31,8 @@ The installer prints your subscription URLs on completion (also saved to
 ```bash
 sudo raylink exit                 # re-run / update (safe, reuses saved state)
 sudo raylink exit --health-check  # lightweight health check
+sudo raylink doctor               # read-only diagnostics (services, ports, drift, self-test)
+sudo raylink info                 # node summary (secrets hidden; add --show-secrets)
 sudo raylink version
 ```
 

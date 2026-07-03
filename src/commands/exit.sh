@@ -31,9 +31,11 @@ run_healthcheck_mode() {
   sync_client_outputs
 
   echo "Health check complete. Client files and subscription data are up to date."
-  echo "Current public IPv4: ${PUBLIC_IP}"
+  echo "Current public IP: ${PUBLIC_IP:-<not detected>}"
+  # Do not echo the token-bearing subscription URL: this runs under systemd and
+  # its output is persisted to journald. The full URLs live in ${INFO_FILE}.
   if is_true "${ENABLE_SUBSCRIPTION}"; then
-    echo "Subscription URL: ${SUBSCRIPTION_URL_CLASH}"
+    echo "Subscription files regenerated (URLs saved in ${INFO_FILE})."
   fi
 }
 
@@ -134,13 +136,14 @@ exit_main() {
   LISTEN_ADDRESS_WAS_SET="${LISTEN_ADDRESS+x}"
   PUBLIC_IP_WAS_SET="${PUBLIC_IP+x}"
 
-  local healthcheck_only="false"
+  local mode="install"
   local arg
   for arg in "$@"; do
     case "${arg}" in
-      --health-check|--healthcheck|healthcheck)
-        healthcheck_only="true"
-        ;;
+      --health-check|--healthcheck|healthcheck) mode="health" ;;
+      doctor) mode="doctor" ;;
+      info) mode="info" ;;
+      --show-secrets) SHOW_SECRETS="true" ;;
       *)
         echo "Unknown argument: ${arg}"
         exit 1
@@ -154,9 +157,18 @@ exit_main() {
   # shellcheck source=/dev/null
   . "${RAYLINK_DEFAULTS}/legacy.env"
 
-  if is_true "${healthcheck_only}"; then
-    run_healthcheck_mode
-  else
-    run_full_install
-  fi
+  # Config-render hook (used by the doctor drift check).
+  XRAY_CONFIG_RENDERER="render_exit_xray_config"
+
+  case "${mode}" in
+    health) run_healthcheck_mode ;;
+    doctor|info)
+      # Load install-time settings (TFO, metrics, pinned addresses) so the
+      # drift comparison and info reflect how the node was actually built.
+      # shellcheck source=/dev/null
+      [ -f "${HEALTHCHECK_ENV_FILE}" ] && . "${HEALTHCHECK_ENV_FILE}"
+      [ "${mode}" = doctor ] && run_doctor || run_info
+      ;;
+    *) run_full_install ;;
+  esac
 }

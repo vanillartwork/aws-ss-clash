@@ -18,7 +18,7 @@ export RAYLINK_COMMANDS="${RAYLINK_ROOT}/commands"
 RAYLINK_VERSION="$(cat "${RAYLINK_ROOT}/VERSION" 2>/dev/null || echo "dev")"
 
 # Source shared library modules (order matters: common first).
-for _mod in common dns xray reality subscription client_outputs healthcheck upstream; do
+for _mod in common dns xray reality subscription client_outputs healthcheck upstream diagnostics; do
   # shellcheck source=/dev/null
   . "${RAYLINK_LIB}/${_mod}.sh"
 done
@@ -41,6 +41,10 @@ Commands:
                       UPSTREAM_SUBSCRIPTION_URL, or UPSTREAM_* fields).
                       Options:
                         --health-check   Run the lightweight health check only.
+  doctor              Diagnose the installed node (read-only): services, ports,
+                      timer, config drift, Reality self-test.
+  info                Show the installed node's details (secrets hidden;
+                      pass --show-secrets to reveal).
   version             Print the RayLink version.
   help                Show this help.
 
@@ -65,6 +69,20 @@ case "${RAYLINK_COMMAND}" in
     # shellcheck source=/dev/null
     . "${RAYLINK_COMMANDS}/relay.sh"
     relay_main "$@"
+    ;;
+  doctor|info)
+    # Run the diagnostic in the installed node's context (auto-detect role).
+    _diag="${RAYLINK_COMMAND}"
+    _role="$(detect_installed_role)" || {
+      echo "No RayLink node found on this server." >&2
+      echo "Install one first, e.g.: sudo raylink exit" >&2
+      exit 1
+    }
+    RAYLINK_COMMAND="${_role}"
+    export RAYLINK_COMMAND
+    # shellcheck source=/dev/null
+    . "${RAYLINK_COMMANDS}/${_role}.sh"
+    "${_role}_main" "${_diag}" "$@"
     ;;
   version|--version|-v)
     printf '%s\n' "${RAYLINK_VERSION}"

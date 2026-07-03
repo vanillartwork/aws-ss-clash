@@ -121,10 +121,11 @@ run_relay_healthcheck_mode() {
   sync_client_outputs
 
   echo "Relay health check complete. Client files and subscription data are up to date."
-  echo "Current public IPv4: ${PUBLIC_IP}"
+  echo "Current public IP: ${PUBLIC_IP:-<not detected>}"
   echo "Upstream exit: ${UPSTREAM_ADDRESS}:${UPSTREAM_PORT}"
+  # Do not echo the token-bearing subscription URL to journald; see ${INFO_FILE}.
   if is_true "${ENABLE_SUBSCRIPTION}"; then
-    echo "Subscription URL: ${SUBSCRIPTION_URL_CLASH}"
+    echo "Subscription files regenerated (URLs saved in ${INFO_FILE})."
   fi
 }
 
@@ -263,13 +264,14 @@ relay_main() {
 
   relay_map_inbound_aliases
 
-  local healthcheck_only="false"
+  local mode="install"
   local arg
   for arg in "$@"; do
     case "${arg}" in
-      --health-check|--healthcheck|healthcheck)
-        healthcheck_only="true"
-        ;;
+      --health-check|--healthcheck|healthcheck) mode="health" ;;
+      doctor) mode="doctor" ;;
+      info) mode="info" ;;
+      --show-secrets) SHOW_SECRETS="true" ;;
       *)
         echo "Unknown argument: ${arg}"
         exit 1
@@ -284,11 +286,16 @@ relay_main() {
 
   # Dependency-injection hooks consumed by the shared libs.
   XRAY_CONFIG_WRITER="write_relay_xray_config"
+  XRAY_CONFIG_RENDERER="render_relay_xray_config"
   HEALTHCHECK_ENV_WRITER="write_relay_healthcheck_env_file"
 
-  if is_true "${healthcheck_only}"; then
-    run_relay_healthcheck_mode
-  else
-    run_relay_full_install
-  fi
+  case "${mode}" in
+    health) run_relay_healthcheck_mode ;;
+    doctor|info)
+      # shellcheck source=/dev/null
+      [ -f "${HEALTHCHECK_ENV_FILE}" ] && . "${HEALTHCHECK_ENV_FILE}"
+      [ "${mode}" = doctor ] && run_doctor || run_info
+      ;;
+    *) run_relay_full_install ;;
+  esac
 }
