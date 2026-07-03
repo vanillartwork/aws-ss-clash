@@ -19,7 +19,7 @@ address throughout.
 
 You need a Linux server with a public IP address (IPv4 or IPv6) and SSH access.
 Any major cloud hosting provider is compatible, including AWS, Google Cloud,
-Oracle Cloud, Microsoft Azure, or low-cost VPS hosts. Ubuntu Server (24.04
+Oracle Cloud, Microsoft Azure or low-cost VPS hosts. Ubuntu Server (24.04
 LTS or newer) is recommended. A minimum resource specification (e.g., 1 vCPU,
 512MB RAM) is more than sufficient for personal proxy requirements.
 
@@ -132,10 +132,10 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 ```
 
 When it finishes, the installer prints your subscription URLs (also saved to
-`/opt/cloud-xray-exit/server-info.txt`). Continue to [3. Import into Clients](#3-import-into-clients).
+`/opt/cloud-xray-exit/server-info.txt`). Continue to [3](#3-import-into-clients).
 
 To customize the install (ports, DNS profile, IPv6, etc.), pass environment
-variables — see [configuration.md](configuration.md). Example, using port `8443`:
+variables — see [configuration](configuration.md). Example, using port `8443`:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env PORT=8443 bash -s -- exit
@@ -154,17 +154,17 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 ```
 
 Replace `203.0.113.10:8080/sub/TOKEN` with your exit's actual Universal
-Subscription URL. See [relay.md](relay.md) for other ways to supply the upstream.
+Subscription URL. See [relay](relay.md) for other ways to supply the upstream.
 
 ### 3. Import into Clients
 
-The installer serves three link types. Use the one your client supports:
+The installer serves three link types. Use the one your client supports (see [Appendix C](#c-recommended-clients-by-os) for platform-specific client recommendations):
 
-| Link | Endpoint | Use it for |
+| Link | Endpoint | Description |
 |---|---|---|
-| **Universal Subscription URL** | `http://SERVER:8080/sub/TOKEN` | Auto-negotiating subscription for clients with subscription import — v2rayN, v2rayNG, Hiddify, Shadowrocket, NekoBox, etc. |
-| **Clash Subscription URL** | `http://SERVER:8080/sub/TOKEN/clash.yaml` | Clash-family clients only — Mihomo, Clash Meta, FlClash, Clash Verge Rev |
-| **Direct VLESS Link** | `vless://…` | Importing a single node by hand, with no subscription |
+| **Universal Subscription URL** | `http://SERVER:8080/sub/TOKEN` | Auto-negotiating subscription format for compatible multi-protocol clients (see [Appendix C](#c-recommended-clients-by-os)). |
+| **Clash Subscription URL** | `http://SERVER:8080/sub/TOKEN/clash.yaml` | Clash-family configuration format for Clash/Mihomo clients (see [Appendix C](#c-recommended-clients-by-os)). |
+| **Direct VLESS Link** | `vless://…` | Hand-import connection string for single-node configurations (no subscription needed). |
 
 When HTTP subscription is enabled, the installer prints the two subscription
 URLs; when it is disabled, it prints the Direct VLESS Link instead.
@@ -218,10 +218,10 @@ sudo raylink version
 A systemd timer already re-checks the node periodically and self-heals. To learn
 more:
 
-- [exit.md](exit.md) — exit-node install, options, and health check.
-- [relay.md](relay.md) — relay model, upstream parameters, and firewall.
-- [configuration.md](configuration.md) — every environment variable.
-- [troubleshooting.md](troubleshooting.md) — common issues, IPv6, uninstall.
+- [exit](exit.md) — exit-node install, options, and health check.
+- [relay](relay.md) — relay model, upstream parameters, and firewall.
+- [configuration](configuration.md) — every environment variable.
+- [troubleshooting](troubleshooting.md) — common issues, IPv6, uninstall.
 
 ---
 
@@ -316,11 +316,32 @@ sudo firewall-cmd --list-ports
 # expected: 443/tcp 8080/tcp
 ```
 
+### C. Recommended Clients by OS
+
+Below is a list of recommended mainstream clients categorized by operating system, along with the link types they support (Universal, Clash, or Direct VLESS Link).
+
+- **Windows**
+  - [v2rayN](https://github.com/2dust/v2rayN) — Supports **Universal**, **Direct VLESS Link**
+  - [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) — Supports **Clash**
+  - [FlClash](https://github.com/flclash/FlClash) — Supports **Clash**, **Universal**
+  - [Hiddify](https://github.com/hiddify/hiddify-next) — Supports **Universal**, **Direct VLESS Link**
+
+- **Android**
+  - [v2rayNG](https://github.com/2dust/v2rayNG) — Supports **Universal**, **Direct VLESS Link**
+  - [Hiddify](https://github.com/hiddify/hiddify-next) — Supports **Universal**, **Direct VLESS Link**
+  - [FlClash](https://github.com/flclash/FlClash) — Supports **Clash**, **Universal**
+  - [NekoBox](https://github.com/MatsuriDayo/NekoBoxForAndroid) — Supports **Universal**, **Direct VLESS Link**
+
+- **iOS / macOS & tvOS**
+  - [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) — Supports **Universal**, **Direct VLESS Link**
+  - [Anywhere](https://github.com/NodePassProject/Anywhere) — Supports **Universal**, **Direct VLESS Link**
+  - [Egern](https://apps.apple.com/us/app/egern/id1616105820) — Supports **Universal**, **Direct VLESS Link**
+
 ---
 
 ## 指南
 
-本指南将协助您在一台全新的 Linux 服务器上完成节点部署与客户端配置导入。本教程中的步骤适用于所有类型的节点，针对特定节点类型的详细选项请参阅 [exit](exit.md) 与 [relay](relay.md)。
+本指南将协助您在一台全新的 Linux 服务器上完成节点部署与客户端配置导入。本教程中的步骤适用于所有类型的节点，针对特定节点类型的详细选项请参阅 [exit.md](exit.md) 与 [relay](relay.md)。
 
 本文所有示例均使用文档保留 IP `203.0.113.10`，请在实际操作中替换为您服务器的公网 IP 地址。
 
@@ -328,7 +349,7 @@ sudo firewall-cmd --list-ports
 
 #### 1.1 选择 VPS
 
-您需要准备一台配置有公网 IP（支持 IPv4 或 IPv6）且启用了 SSH 登录的 Linux 云服务器。常见的服务商（如 AWS、Google Cloud、Oracle Cloud、Azure 以及各类高性价比 VPS 服务商）均可满足要求。推荐使用 Ubuntu Server（24.04 LTS 或更高版本），个人用户选择最低规格的实例即可。
+您需要准备一台配置有公网 IP（支持 IPv4 或 IPv6）且启用了 SSH 登录的 Linux 云服务器。常见的服务商（如 AWS、Google Cloud、Oracle Cloud、Azure 以及各类高性价比 VPS 服务商）均可满足要求。推荐使用 Ubuntu Server（24.04 LTS 或更高版本），个人用户选择最低规格的实例即可（例如 1 vCPU，512MB RAM）。
 
 **配置示例：AWS EC2**
 
@@ -380,7 +401,7 @@ SSH 服务采用非对称加密方式进行身份验证。它由一对密钥组�
 
 - **无需启用 UDP**：Xray VLESS Reality 基于 TCP 传输协议，因此防火墙仅需放行 TCP 流量。
 - **敏感信息防护**：由于 HTTP 订阅链接中包含节点的完整连接配置，建议将 `8080` 端口的源 IP 限制为您自己的 IP，或在客户端成功导入订阅后，在控制台中关闭该端口。
-- **中转（Relay）模式配置**：在中转架构下，出口节点只需向中转节点的公网 IP 开放代理端口（默认 `443`），具体配置请参考 [relay.md](relay.md)。
+- **中转（Relay）模式配置**：在中转架构下，出口节点只需向中转节点的公网 IP 开放代理端口（默认 `443`），具体配置请参考 [relay](relay.md)。
 
 > [!WARNING]
 > **常见排查难点**
@@ -394,7 +415,7 @@ SSH 服务采用非对称加密方式进行身份验证。它由一对密钥组�
 ssh -i [KEY_FILE] [USERNAME]@[SERVER_PUBLIC_IP]
 ```
 
-- `[KEY_FILE]`：您本地私钥文件的存储路径（例如 `key.pem` 或 `~/.ssh/id_ed25519`）。
+- `[KEY_FILE]`：您本地私钥文件的存储路径。
 - `[USERNAME]`：服务器的系统默认登录用户名。Ubuntu 系统镜像通常为 `ubuntu`，Debian 镜像为 `debian`，CentOS 等其他系统可能是 `root` 或 `admin`。
 - `[SERVER_PUBLIC_IP]`：目标云服务器的公网 IP 地址。
 
@@ -416,9 +437,9 @@ ssh -i key.pem ubuntu@203.0.113.10
 curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo bash -s -- exit
 ```
 
-部署完成后，安装程序会直接输出您的订阅及节点连接信息（该内容也会同步保存至 `/opt/cloud-xray-exit/server-info.txt` 供日后查阅）。随后可进入第 3 步：[导入客户端配置](#3-导入客户端配置)。
+部署完成后，安装程序会直接输出您的订阅及节点连接信息（该内容也会同步保存至 `/opt/cloud-xray-exit/server-info.txt` 供日后查阅）。随后可进入 [3](#3-导入客户端配置)。
 
-若您希望自定义配置（如修改监听端口、切换 DNS Profile 或启用 IPv6 支持），可通过在脚本前置传入环境变量实现，详见 [configuration.md](configuration.md)。例如，将代理监听端口指定为 `8443`：
+若您希望自定义配置（如修改监听端口、切换 DNS Profile 或启用 IPv6 支持），可通过在脚本前置传入环境变量实现，详见 [configuration](configuration.md). 例如，将代理监听端口指定为 `8443`：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env PORT=8443 bash -s -- exit
@@ -433,17 +454,17 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 ```
 
 > [!NOTE]
-> 请将示例中的 `203.0.113.10:8080/sub/TOKEN` 替换为您出口服务器上实际生成的 Universal 订阅链接。关于定义上游出口参数的其他高级方案，请参阅 [relay.md](relay.md)。
+> 请将示例中的 `203.0.113.10:8080/sub/TOKEN` 替换为您出口服务器上实际生成的 Universal 订阅链接。关于定义上游出口参数的其他高级方案，请参阅 [relay](relay.md)。
 
 ### 3. 导入客户端配置
 
-部署完成后，RayLink 会生成以下三种链接，请根据您所使用的代理软件客户端进行选择：
+部署完成后，RayLink 会生成以下三种链接，请根据您所使用的代理软件客户端进行选择（推荐客户端详见 [附录 C](#c-各系统主流客户端推荐)）：
 
-| 订阅链接类型 | 链接形式 | 适用客户端 |
+| 订阅链接类型 | 链接形式 | 功能与说明 |
 |---|---|---|
-| **Universal Subscription URL** | `http://SERVER:8080/sub/TOKEN` | 自动协商格式，支持常规订阅导入的客户端，如 v2rayN、v2rayNG、Hiddify、Shadowrocket、NekoBox 等 |
-| **Clash Subscription URL** | `http://SERVER:8080/sub/TOKEN/clash.yaml` | 仅限 Clash/Mihomo 核心的客户端，如 Mihomo、Clash Meta、FlClash、Clash Verge Rev |
-| **Direct VLESS Link** | `vless://…` | 用于手动导入单个节点信息，不依赖订阅分发服务 |
+| **Universal Subscription URL** | `http://SERVER:8080/sub/TOKEN` | 自动协商订阅格式，支持常规订阅导入的跨平台客户端（详见 [附录 C](#c-各系统主流客户端推荐)） |
+| **Clash Subscription URL** | `http://SERVER:8080/sub/TOKEN/clash.yaml` | Clash YAML 格式，仅限 Clash/Mihomo 核心的客户端（详见 [附录 C](#c-各系统主流客户端推荐)） |
+| **Direct VLESS Link** | `vless://…` | VLESS 节点链接，用于在客户端中手动导入单个节点（不依赖订阅服务） |
 
 - **启用 HTTP 订阅时**：部署程序将同时提供 **Universal** 和 **Clash** 订阅链接；
 - **禁用 HTTP 订阅时**：程序将仅输出 **Direct VLESS Link**。
@@ -457,7 +478,7 @@ sudo cat /opt/cloud-xray-exit/vless-uri.txt
 ```
 
 > [!NOTE]
-> Clash 配置文件及 VLESS URI 连接串将保留其专用的字段命名规范（如 `network: tcp`、`reality-opts.public-key`、`type=tcp`、`pbk=...` 等）。这些格式均由各大客户端标准定义，请勿将其手动修改为 Xray JSON配置的命名格式。
+> Clash 配置文件及 VLESS URI 连接串将保留其专用的字段命名规范（如 `network: tcp`、`reality-opts.public-key`、`type=tcp`、`pbk=...` 等）。这些格式均由各大客户端标准定义，请勿将其手动修改为 Xray JSON 配置的命名格式。
 
 ### 4. 下载配置文件
 
@@ -489,12 +510,12 @@ sudo raylink exit --health-check  # 手动触发一次节点状态自愈与检�
 sudo raylink version             # 查看当前 RayLink 的版本号
 ```
 
-服务器已默认启用 systemd 定时任务，在后台对服务状态和 Reality 目标域名进行定期健康监控与自愈重建。如需获取更深入的技术细节，请阅读以下参考文档：
+服务器已默认启用 systemd 定时任务，在后台对服务状态 and Reality 目标域名进行定期健康监控与自愈重建。如需获取更深入的技术细节，请阅读以下参考文档：
 
-- [exit.md](exit.md) —— 出口节点详细部署参数、架构说明及自恢复逻辑。
-- [relay.md](relay.md) —— 中转模式工作流、上游参数管理及专属防火墙设置。
-- [configuration.md](configuration.md) —— 每一个环境变量配置字段的参考指南。
-- [troubleshooting.md](troubleshooting.md) —— 常见连接排查、IPv6 部署指南及无痕卸载方法。
+- [exit](exit.md) —— 出口节点详细部署参数、架构说明及自恢复逻辑。
+- [relay](relay.md) —— 中转模式工作流、上游参数管理及专属防火墙设置。
+- [configuration](configuration.md) —— 每一个环境变量配置字段的参考指南。
+- [troubleshooting](troubleshooting.md) —— 常见连接排查、IPv6 部署指南及无痕卸载方法。
 
 ---
 
@@ -502,7 +523,7 @@ sudo raylink version             # 查看当前 RayLink 的版本号
 
 ### A. SSH 密钥生成
 
-若您尚未在本地生成过密钥对，请参照此步骤进行创建。目前推荐使用安全性与速度兼备的 ED25519 算法（生成的文件体积小且更加现代）；RSA 4096 位算法则作为高兼容性的备选方案。
+若您尚未在本地生成过密钥对，请参照此步骤进行创建。目前推荐使用安全性与速度兼备的 ED25519 算法；RSA 4096 位算法则作为高兼容性的备选方案。
 
 在本地终端中生成 ED25519 密钥对（将默认保存至本地的 `~/.ssh/id_ed25519`）：
 
@@ -543,7 +564,7 @@ Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | Set-Clipboard
 
 ### B. 防火墙配置 (ufw / firewalld)
 
-仅仅在云服务商的管理控制台开放端口有时并不充分，服务器 of Linux 系统中如果启用了系统级本地防火墙，同样需要手动写入端口策略。本部分建议仅在服务器**已启用**本地防火墙时进行配置，请勿为了运行 RayLink 而专门且盲目地开启防火墙。
+仅仅在云服务商的管理控制台开放端口有时并不充分，服务器的 Linux 系统中如果启用了系统级本地防火墙，同样需要手动写入端口策略。本部分建议仅在服务器**已启用**本地防火墙时进行配置，请勿为了运行 RayLink 而专门且盲目地开启防火墙。
 
 **ufw 防火墙（主要用于 Debian / Ubuntu 系统）：**
 
@@ -583,3 +604,24 @@ sudo firewall-cmd --reload
 sudo firewall-cmd --list-ports
 # 预期输出应包含: 443/tcp 8080/tcp
 ```
+
+### C. 各系统主流客户端推荐
+
+以下是按操作系统划分的主流客户端推荐列表，供您选择使用。每个客户端均标注了支持的连接类型（通用订阅、Clash 订阅或 VLESS 节点链接）。
+
+- **Windows 系统**
+  - [v2rayN](https://github.com/2dust/v2rayN) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
+  - [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) — 支持 **Clash Subscription URL**
+  - [FlClash](https://github.com/flclash/FlClash) — 支持 **Clash Subscription URL**、**通用订阅 (Universal)**
+  - [Hiddify](https://github.com/hiddify/hiddify-next) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
+
+- **Android (安卓) 系统**
+  - [v2rayNG](https://github.com/2dust/v2rayNG) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
+  - [Hiddify](https://github.com/hiddify/hiddify-next) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
+  - [FlClash](https://github.com/flclash/FlClash) — 支持 **Clash Subscription URL**、**通用订阅 (Universal)**
+  - [NekoBox](https://github.com/MatsuriDayo/NekoBoxForAndroid) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
+
+- **iOS / macOS & tvOS (苹果生态)**
+  - [Shadowrocket (小火箭)](https://apps.apple.com/app/shadowrocket/id932747118) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
+  - [Anywhere](https://github.com/NodePassProject/Anywhere) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
+  - [Egern](https://apps.apple.com/us/app/egern/id1616105820) — 支持 **通用订阅 (Universal)**、**Direct VLESS Link**
