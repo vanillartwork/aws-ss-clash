@@ -260,16 +260,23 @@ Copy the public key to your clipboard, then paste it into your provider's
 **SSH Keys** page (the "Key Name" is just a label and does not affect
 authentication):
 
-```bash
 # macOS
+```bash
 pbcopy < ~/.ssh/id_ed25519.pub
-
-# Linux (X11 / Wayland)
-xclip -sel clip < ~/.ssh/id_ed25519.pub   # or: wl-copy < ~/.ssh/id_ed25519.pub
 ```
 
-```powershell
+# Linux (X11)
+```bash
+xclip -sel clip < ~/.ssh/id_ed25519.pub
+```
+
+# Linux (Wayland)
+```bash
+wl-copy < ~/.ssh/id_ed25519.pub
+```
+
 # Windows (PowerShell)
+```powershell
 Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | Set-Clipboard
 ```
 
@@ -335,6 +342,14 @@ Below is a list of recommended mainstream clients categorized by operating syste
   - [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) — Supports **Universal**, **VLESS**
   - [Anywhere](https://github.com/NodePassProject/Anywhere) — Supports **Universal**, **VLESS**
   - [Egern](https://apps.apple.com/us/app/egern/id1616105820) — Supports **Universal**, **VLESS**
+
+- **Linux**
+  - [v2rayA](https://github.com/v2rayA/v2rayA) — Supports **Clash**, **Universal**, **VLESS**
+  - [Furious](https://github.com/LorenEteval/Furious) — Supports **Clash**, **Universal**, **VLESS**
+  - [GoXRay](https://github.com/goxray/desktop) — Supports **Universal**, **VLESS**
+
+- **HarmonyOS**
+  - [Hey](https://github.com/popsiclelmlm/Hey) — Supports **Universal**, **VLESS**
 
 ---
 
@@ -548,16 +563,23 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ~/.ssh/id_rsa
 
 您可以通过以下指令将公钥文件的内容一键复制到剪贴板，随后粘贴至云控制面板的 **SSH Keys** 新建窗口中（控制台里的 "Key Name" 仅做备注标识，不影响身份鉴权）：
 
-```bash
 # macOS
+```bash
 pbcopy < ~/.ssh/id_ed25519.pub
-
-# Linux (X11 环境 / Wayland 环境)
-xclip -sel clip < ~/.ssh/id_ed25519.pub   # 或：wl-copy < ~/.ssh/id_ed25519.pub
 ```
 
-```powershell
+# Linux (X11)
+```bash
+xclip -sel clip < ~/.ssh/id_ed25519.pub
+```
+
+# Linux (Wayland)
+```bash
+wl-copy < ~/.ssh/id_ed25519.pub
+```
+
 # Windows (PowerShell)
+```powershell
 Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | Set-Clipboard
 ```
 
@@ -608,13 +630,13 @@ sudo firewall-cmd --list-ports
 
 以下是按操作系统划分的主流客户端推荐列表，供您选择使用。每个客户端均标注了支持的连接类型（Universal、Clash 或 VLESS 链接）。
 
-- **Windows 系统**
-  - [v2rayN](https://github.com/2dust/v2rayN) — 支持 **Universal**、**VLESS**
-  - [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev) — 支持 **Clash**
+- **Windows**
+  - [v2rayN](https://github.com/2dust/v2rayN/releases) — 支持 **Universal**、**VLESS**
+  - [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev/releases) — 支持 **Clash**
   - [FlClash](https://github.com/flclash/FlClash) — 支持 **Clash**、**Universal**
   - [Hiddify](https://github.com/hiddify/hiddify-next) — 支持 **Universal**、**VLESS**
 
-- **安卓系统**
+- **安卓**
   - [v2rayNG](https://github.com/2dust/v2rayNG) — 支持 **Universal**、**VLESS**
   - [Hiddify](https://github.com/hiddify/hiddify-next) — 支持 **Universal**、**VLESS**
   - [FlClash](https://github.com/flclash/FlClash) — 支持 **Clash**、**Universal**
@@ -624,3 +646,11 @@ sudo firewall-cmd --list-ports
   - [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) — 支持 **Universal**、**VLESS**
   - [Anywhere](https://github.com/NodePassProject/Anywhere) — 支持 **Universal**、**VLESS**
   - [Egern](https://apps.apple.com/us/app/egern/id1616105820) — 支持 **Universal**、**VLESS**
+ 
+- **Linux**
+  - [v2rayA](https://github.com/v2rayA/v2rayA) — 支持 **Clash**、**Universal**、**VLESS**
+  - [Furious](https://github.com/LorenEteval/Furious) — 支持 **Clash**、**Universal**、**VLESS**
+  - [GoXRay](https://github.com/goxray/desktop) — 支持 **Universal**、**VLESS**
+
+- **鸿蒙**
+  - [Hey](https://github.com/popsiclelmlm/Hey) — 支持 **Universal**、**VLESS**
