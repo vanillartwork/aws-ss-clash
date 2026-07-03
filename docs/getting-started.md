@@ -563,13 +563,13 @@ sudo raylink version              # 查看当前 RayLink 的版本号
 在本地终端中生成 ED25519 密钥对（将默认保存至本地的 `~/.ssh/id_ed25519`）：
 
 ```bash
-ssh-keygen -t ed25519 -C "your_email@example.com"
+ssh-keygen -t ed25519 -C "you@example.com"
 ```
 
 或者在指定路径下生成高强度的 RSA 4096 密钥对：
 
 ```bash
-ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ~/.ssh/id_rsa
+ssh-keygen -t rsa -b 4096 -C "you@example.com" -f ~/.ssh/id_rsa
 ```
 
 > [!NOTE]
