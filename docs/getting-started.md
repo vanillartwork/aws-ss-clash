@@ -174,6 +174,13 @@ URLs; when it is disabled, it prints the Direct VLESS Link instead.
 For Clash/Mihomo clients: import the Clash Subscription URL, select your node
 under the `GLOBAL` proxy group, then enable system proxy or TUN mode.
 
+To view the subscription URLs on the server (an exit node shown; a relay uses
+`/opt/cloud-xray-relay`):
+
+```bash
+sudo cat /opt/cloud-xray-exit/subscription.env
+```
+
 To view the Direct VLESS Link on the server (an exit node shown; a relay uses
 `/opt/cloud-xray-relay`):
 
@@ -491,14 +498,20 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 
 对于 Clash/Mihomo 系列客户端，导入 Clash 订阅链接后，请在代理组中将 `GLOBAL` 设置为您所部署的节点，并开启系统代理（System Proxy）或 TUN 模式。
 
-在服务器终端上查看 Direct VLESS 链接的方法（以出口节点为例，中转节点请查看 `/opt/cloud-xray-relay` 对应目录）：
+在服务器终端上查看订阅链接的方法（以出口节点为例，中转节点请查看 `/opt/cloud-xray-relay` 对应目录）：
+
+```bash
+sudo cat /opt/cloud-xray-exit/vless-uri.txt
+```
+
+在服务器终端上查看 VLESS 链接的方法（以出口节点为例，中转节点请查看 `/opt/cloud-xray-relay` 对应目录）：
 
 ```bash
 sudo cat /opt/cloud-xray-exit/vless-uri.txt
 ```
 
 > [!NOTE]
-> Clash 配置文件及 VLESS URI 连接串将保留其专用的字段命名规范，请勿修改配置的命名格式。
+> Clash 配置文件及 VLESS 链接将保留其专用的字段命名规范，请勿修改配置的命名格式。
 
 ### 4. 下载配置文件
 
