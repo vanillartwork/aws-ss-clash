@@ -82,12 +82,28 @@ resolve_dns_profile() {
 #
 # PUBLIC_IP_VERSION=auto (default): try IPv4, fall back to IPv6.
 # PUBLIC_IP_VERSION=4 / 6: force a family. A user-provided PUBLIC_IP is
-# validated and its family auto-detected. Sets PUBLIC_IP_FAMILY (4/6) and the
-# derived PUBLIC_URI_HOST / PUBLIC_URL_HOST (bracketed for IPv6). On IPv4 the
-# derived hosts equal PUBLIC_IP, so the IPv4 path is unchanged.
+# validated and its family auto-detected.
+#
+# PUBLIC_HOST=<domain>: a hostname (e.g. a DDNS domain) used as the CLIENT-facing
+# address. The server still detects its real public IP to choose the listen
+# family; the domain only overrides the VLESS link / subscription / Clash server
+# host so clients keep working across IP changes.
+#
+# Sets PUBLIC_IP_FAMILY (4/6), PUBLIC_CLASH_HOST (unbracketed, for Clash), and
+# PUBLIC_URI_HOST / PUBLIC_URL_HOST (IPv6 bracketed, for URIs/URLs). With no
+# override on IPv4 these all equal PUBLIC_IP, so the IPv4 path is unchanged.
 detect_public_ip_and_resolve_dns() {
-  local ver
+  local ver host_override=""
   ver="$(printf '%s' "${PUBLIC_IP_VERSION:-auto}" | tr '[:upper:]' '[:lower:]')"
+
+  if [ -n "${PUBLIC_HOST:-}" ]; then
+    if valid_domain "${PUBLIC_HOST}"; then
+      host_override="${PUBLIC_HOST}"
+    else
+      echo "Error: PUBLIC_HOST is not a valid domain name: ${PUBLIC_HOST}"
+      exit 1
+    fi
+  fi
 
   if [ -n "${PUBLIC_IP:-}" ]; then
     if valid_public_ipv4 "${PUBLIC_IP}"; then
@@ -96,6 +112,7 @@ detect_public_ip_and_resolve_dns() {
       PUBLIC_IP_FAMILY=6
     else
       echo "Error: PUBLIC_IP is not a valid public IPv4 or IPv6 address: ${PUBLIC_IP}"
+      echo "For a domain name, use PUBLIC_HOST instead."
       exit 1
     fi
   else
@@ -121,21 +138,35 @@ detect_public_ip_and_resolve_dns() {
   fi
 
   if [ -z "${PUBLIC_IP}" ]; then
-    echo "Failed to detect a public IP address."
-    echo "Set PUBLIC_IP=<addr> (IPv4 or IPv6), or PUBLIC_IP_VERSION=4|6|auto."
-    exit 1
+    if [ -n "${host_override}" ]; then
+      # No detectable IP, but a client-facing domain was given: choose the
+      # listen family from PUBLIC_IP_VERSION (default IPv4).
+      case "${ver}" in 6|ipv6|v6) PUBLIC_IP_FAMILY=6 ;; *) PUBLIC_IP_FAMILY=4 ;; esac
+    else
+      echo "Failed to detect a public IP address."
+      echo "Set PUBLIC_IP=<addr> (IPv4/IPv6), PUBLIC_HOST=<domain>, or PUBLIC_IP_VERSION=4|6|auto."
+      exit 1
+    fi
   fi
 
-  # Derived authority hosts (IPv6 gets bracketed for URIs/URLs).
-  PUBLIC_URI_HOST="$(format_host_for_uri "${PUBLIC_IP}")"
-  PUBLIC_URL_HOST="${PUBLIC_URI_HOST}"
+  # Client-facing hosts. A PUBLIC_HOST domain overrides the IP literal.
+  if [ -n "${host_override}" ]; then
+    PUBLIC_CLASH_HOST="${host_override}"
+    PUBLIC_URI_HOST="${host_override}"
+    PUBLIC_URL_HOST="${host_override}"
+  else
+    PUBLIC_CLASH_HOST="${PUBLIC_IP}"
+    PUBLIC_URI_HOST="$(format_host_for_uri "${PUBLIC_IP}")"
+    PUBLIC_URL_HOST="${PUBLIC_URI_HOST}"
+  fi
 
   # When the user did not pin LISTEN_ADDRESS, bind :: on an IPv6 node.
   if [ -z "${LISTEN_ADDRESS_WAS_SET:-}" ] && [ "${PUBLIC_IP_FAMILY}" = 6 ]; then
     LISTEN_ADDRESS="::"
   fi
 
-  echo "Public IP: ${PUBLIC_IP} (IPv${PUBLIC_IP_FAMILY})"
+  echo "Public IP: ${PUBLIC_IP:-<not detected>} (IPv${PUBLIC_IP_FAMILY})"
+  [ -n "${host_override}" ] && echo "Client-facing host: ${host_override}"
 
   resolve_dns_profile
 }

@@ -138,6 +138,21 @@ format_host_for_uri() {
   esac
 }
 
+# True if the argument looks like a DNS hostname (not a bare IPv4/IPv6 literal).
+# Used for the PUBLIC_HOST override (e.g. a DDNS or static domain).
+valid_domain() {
+  local domain="${1:-}"
+  [ -n "${domain}" ] || return 1
+  [ "${#domain}" -le 253 ] || return 1
+  # Exclude bare IPv4 / IPv6 literals so they are handled as addresses.
+  printf '%s' "${domain}" | grep -Eq '^[0-9.]+$' && return 1
+  printf '%s' "${domain}" | grep -Eq '^[0-9a-fA-F:]+$' && return 1
+  # RFC 1035-style labels: letters/digits/hyphens, 1-63 chars each, no
+  # leading/trailing hyphen; one or more dot-separated labels.
+  printf '%s' "${domain}" | grep -Eq \
+    '^([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$'
+}
+
 urlencode() {
   local old_lc="${LC_ALL:-}"
   local LC_ALL=C

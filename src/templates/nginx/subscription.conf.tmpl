@@ -8,6 +8,10 @@ server {
     root ${SUB_ROOT};
     autoindex off;
 
+    # The subscription token is part of the request path; do not persist it to
+    # nginx access logs. Errors are still logged to the default error_log.
+    access_log off;
+
     # /sub/{TOKEN} -> /sub/{TOKEN}/vless
     location ~ "^/sub/[A-Za-z0-9_-]{24,128}$" {
         limit_req zone=${SUB_LIMIT_ZONE} burst=${SUB_RATE_BURST} nodelay;

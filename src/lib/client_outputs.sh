@@ -10,8 +10,10 @@ write_clash_config() {
   # Static header, then the selected DNS profile, then the rendered proxies.
   cat "${RAYLINK_TEMPLATES}/clash/base.yaml.tmpl" > "${CLASH_FILE}"
   write_dns_config >> "${CLASH_FILE}"
+  # PUBLIC_CLASH_HOST is the unbracketed client host (a PUBLIC_HOST domain, or
+  # the raw IP — Clash wants a bare literal, not a bracketed IPv6).
   render_template "${RAYLINK_TEMPLATES}/clash/proxies.yaml.tmpl" \
-    NODE_NAME PUBLIC_IP PORT UUID TFO_YAML_VALUE REALITY_SERVER_NAME FLOW CLIENT_FINGERPRINT PUBLIC_KEY SHORT_ID \
+    NODE_NAME PUBLIC_CLASH_HOST PORT UUID TFO_YAML_VALUE REALITY_SERVER_NAME FLOW CLIENT_FINGERPRINT PUBLIC_KEY SHORT_ID \
     >> "${CLASH_FILE}"
 
   chmod 644 "${CLASH_FILE}"

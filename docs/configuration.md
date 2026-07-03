@@ -121,6 +121,23 @@ individual fields. Saved to `${INSTALL_DIR}/upstream.env`, never published.
 |---|---|---|
 | `PUBLIC_IP_VERSION` | `auto` | `auto` tries IPv4 then falls back to IPv6; force with `4` or `6` |
 | `PUBLIC_IP` | _(detected)_ | Override the detected address (IPv4 or IPv6) |
+| `PUBLIC_HOST` | _(empty)_ | Client-facing hostname (DDNS / static domain) — see below |
+
+### Using a domain (`PUBLIC_HOST`)
+
+Set `PUBLIC_HOST` to a hostname to make clients connect by name instead of by
+raw IP. This is the clean fix for the "server IP changed → clients break"
+problem: point a DDNS or static domain at the server and the generated VLESS
+link, subscription URLs, and Clash `server` all use the domain.
+
+```bash
+sudo env PUBLIC_HOST=vpn.example.com raylink exit
+```
+
+The server still detects its real public IP to choose the listen family (`0.0.0.0`
+vs `::`); only the client-facing address becomes the domain. Priority is
+`PUBLIC_HOST` > `PUBLIC_IP` > auto-detect. `PUBLIC_IP` stays IP-only — passing a
+domain there is rejected with a hint to use `PUBLIC_HOST`.
 
 On an IPv6-only server the node auto-detects an IPv6 address and adjusts: Xray
 listens on `::`, nginx uses `listen [::]:PORT;`, and the VLESS link and
