@@ -248,6 +248,9 @@ Or a legacy RSA 4096-bit key pair:
 ssh-keygen -t rsa -b 4096 -C "you@example.com" -f ~/.ssh/id_rsa
 ```
 
+> [!NOTE]
+> `you@example.com` is an example comment. Replace it with your own email address or another identifiable label.
+
 You will be prompted for a private key passphrase:
 
 - **Leave it empty** (press Enter twice) for convenience.
@@ -288,8 +291,7 @@ Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | Set-Clipboard
 
 Opening ports in your cloud provider's web console may not be sufficient if your
 server's operating system runs a local software firewall. You should only configure
-the firewall that is **already active** on your system; do not enable a firewall
-daemon solely for RayLink.
+the firewall that is **already active** on your system.
 
 **ufw (Debian/Ubuntu).** Check whether it is active:
 
@@ -496,7 +498,7 @@ sudo cat /opt/cloud-xray-exit/vless-uri.txt
 ```
 
 > [!NOTE]
-> Clash 配置文件及 VLESS URI 连接串将保留其专用的字段命名规范请勿修改配置的命名格式。
+> Clash 配置文件及 VLESS URI 连接串将保留其专用的字段命名规范，请勿修改配置的命名格式。
 
 ### 4. 下载配置文件
 
@@ -530,7 +532,7 @@ sudo raylink info                 # 查看节点信息
 sudo raylink version              # 查看当前 RayLink 的版本号
 ```
 
-服务器已默认启用 systemd 定时任务，在后台对服务状态 and Reality 目标域名进行定期健康监控与自愈重建。如需获取更深入的技术细节，请阅读以下参考文档：
+服务器已默认启用 systemd 定时任务，在后台对服务状态和 Reality 目标域名进行定期健康监控与自愈重建。如需获取更深入的技术细节，请阅读以下参考文档：
 
 - [exit](exit.md) —— 出口节点详细部署参数、架构说明及自恢复逻辑。
 - [relay](relay.md) —— 中转模式工作流、上游参数管理及专属防火墙设置。
@@ -556,6 +558,9 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
 ```bash
 ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ~/.ssh/id_rsa
 ```
+
+> [!NOTE]
+> `you@example.com` 只是示例注释，可替换为你的邮箱或其他便于识别的内容。
 
 生成过程中会提示您为私钥设置密码短语（Passphrase）：
 
@@ -591,7 +596,7 @@ Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | Set-Clipboard
 
 ### B. 防火墙配置 (ufw / firewalld)
 
-仅仅在云服务商的管理控制台开放端口有时并不充分，服务器的 Linux 系统中如果启用了系统级本地防火墙，同样需要手动写入端口策略。本部分建议仅在服务器**已启用**本地防火墙时进行配置，请勿为了运行 RayLink 而专门且盲目地开启防火墙。
+仅仅在云服务商的管理控制台开放端口有时并不充分，服务器的 Linux 系统中如果启用了系统级本地防火墙，同样需要手动写入端口策略。本部分建议仅在服务器**已启用**本地防火墙时进行配置。
 
 **ufw 防火墙（主要用于 Debian / Ubuntu 系统）：**
 
