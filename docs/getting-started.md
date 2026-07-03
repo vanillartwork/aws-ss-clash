@@ -260,22 +260,22 @@ Copy the public key to your clipboard, then paste it into your provider's
 **SSH Keys** page (the "Key Name" is just a label and does not affect
 authentication):
 
-# macOS
+**# macOS**
 ```bash
 pbcopy < ~/.ssh/id_ed25519.pub
 ```
 
-# Linux (X11)
+**# Linux (X11)**
 ```bash
 xclip -sel clip < ~/.ssh/id_ed25519.pub
 ```
 
-# Linux (Wayland)
+**# Linux (Wayland)**
 ```bash
 wl-copy < ~/.ssh/id_ed25519.pub
 ```
 
-# Windows (PowerShell)
+**# Windows (PowerShell)**
 ```powershell
 Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | Set-Clipboard
 ```
@@ -521,7 +521,7 @@ scp -i key.pem ubuntu@203.0.113.10:/opt/cloud-xray-exit/vless-uri.txt ./vless-ur
 ```bash
 sudo raylink exit                 # 重新运行或更新（操作具备幂等性，可安全重复执行）
 sudo raylink exit --health-check  # 手动触发一次节点状态自愈与检测
-sudo raylink version             # 查看当前 RayLink 的版本号
+sudo raylink version              # 查看当前 RayLink 的版本号
 ```
 
 服务器已默认启用 systemd 定时任务，在后台对服务状态 and Reality 目标域名进行定期健康监控与自愈重建。如需获取更深入的技术细节，请阅读以下参考文档：
@@ -563,22 +563,22 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ~/.ssh/id_rsa
 
 您可以通过以下指令将公钥文件的内容一键复制到剪贴板，随后粘贴至云控制面板的 **SSH Keys** 新建窗口中（控制台里的 "Key Name" 仅做备注标识，不影响身份鉴权）：
 
-# macOS
+**# macOS**
 ```bash
 pbcopy < ~/.ssh/id_ed25519.pub
 ```
 
-# Linux (X11)
+**# Linux (X11)**
 ```bash
 xclip -sel clip < ~/.ssh/id_ed25519.pub
 ```
 
-# Linux (Wayland)
+**# Linux (Wayland)**
 ```bash
 wl-copy < ~/.ssh/id_ed25519.pub
 ```
 
-# Windows (PowerShell)
+**# Windows (PowerShell)**
 ```powershell
 Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | Set-Clipboard
 ```
