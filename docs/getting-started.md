@@ -18,9 +18,10 @@ address throughout.
 #### 1.1 Choose a VPS
 
 You need a Linux server with a public IP address (IPv4 or IPv6) and SSH access.
-Any provider works — AWS EC2, Google Cloud, Oracle Cloud, Azure, Vultr, and most
-budget VPS hosts. Ubuntu Server (24.04 LTS or newer) is recommended, and a small
-instance is plenty for personal use.
+Any major cloud hosting provider is compatible, including AWS EC2, Google Cloud,
+Oracle Cloud, Microsoft Azure, Vultr, or low-cost VPS hosts. Ubuntu Server (24.04
+LTS or newer) is recommended. A minimum resource specification (e.g., 1 vCPU,
+512MB RAM) is more than sufficient for personal proxy requirements.
 
 **Example: AWS EC2**
 
@@ -47,13 +48,14 @@ it cannot be downloaded again.
 
 #### 1.2 Create an SSH Key Pair
 
-SSH uses a key pair to authenticate you to the server: a **private key** that
-stays on your computer, and a **public key** that is placed on the server.
+SSH authentication relies on public-key cryptography: a **private key** that
+remains secure on your local machine, and a corresponding **public key** deployed
+to the server.
 
 Some providers generate a key pair for you during instance creation (AWS gives
 you a `.pem` private key to download). Others ask you to upload an existing
 public key. If you do not have a key pair yet, generate one locally — the full
-walkthrough is in [Appendix B](#b-ssh-key-generation).
+walkthrough is in [Appendix A](#a-ssh-key-generation).
 
 By default, keys live in the `~/.ssh` directory with standard filenames that most
 SSH clients pick up automatically:
@@ -69,7 +71,8 @@ private key.**
 
 #### 1.3 Configure the Firewall
 
-Open these inbound TCP ports in your cloud provider's firewall (security group):
+Configure your cloud provider's network security group or firewall to permit inbound
+TCP connections on the following ports:
 
 | Port | Source | Purpose |
 |---|---|---|
@@ -79,17 +82,21 @@ Open these inbound TCP ports in your cloud provider's firewall (security group):
 
 Notes:
 
-- Reality over TCP does not need UDP — only open TCP.
-- The subscription URL contains your full client configuration; keep `8080`
-  restricted to your own IP, or disable it after importing.
-- For a **relay**, you instead open the exit's port to the relay's IP — see
+- **No UDP needed**: Xray VLESS Reality is built on the TCP transport protocol;
+  opening UDP ports is unnecessary.
+- **Sensitive data protection**: Because HTTP subscription links contain your full
+  client config, restrict access to port `8080` to your trusted IP ranges, or
+  disable subscription hosting entirely after initial client setup.
+- **Relay configuration**: In a relay architecture, the exit node only needs to
+  open its proxy port (default `443`) to the relay node's IP address — see
   [relay.md](relay.md).
 
-> **Common pitfall.** Opening ports in the cloud console is not always enough.
-> Many Linux images also run a local firewall (`ufw` or `firewalld`) that can
-> silently block traffic even when the cloud rule is correct. If a port looks
-> open in the console but the client still cannot connect, see
-> [Appendix A](#a-firewall-ufw--firewalld).
+> [!WARNING]
+> **Common firewall pitfall.** Opening ports in the cloud console is not always
+> enough. Many Linux images run a local software firewall (`ufw` or `firewalld`)
+> that can silently block traffic even when the cloud rule is correct. If a port
+> looks open in the console but the client still cannot connect, see
+> [Appendix B](#b-firewall-ufw--firewalld).
 
 #### 1.4 Connect via SSH
 
@@ -116,8 +123,9 @@ type `yes` to continue.
 
 #### Exit Node
 
-An **exit node** is the entry-and-exit node: clients connect to it and it reaches
-the internet directly. Run this on the server:
+An **exit node** serves as the direct link to the destination internet. Clients
+connect directly to the exit node's public interface, which forwards traffic out to
+the web. Execute the following command in your server's shell:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo bash -s -- exit
@@ -135,9 +143,11 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 
 #### Relay Node
 
-A **relay node** forwards all client traffic to an existing exit node
-(`Client → Relay → Exit → Internet`). Deploy an exit node first, then take its
-**Universal Subscription URL** and run this on a second server:
+A **relay node** forwards client traffic through an intermediary transit server
+before sending it to the exit node, securing and stabilizing the connection path
+(`Client → Relay → Exit → Internet`). Deploy your exit node first, retrieve its
+**Universal Subscription URL**, and then run the following bootstrap command on your
+secondary (relay) server:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env UPSTREAM_SUBSCRIPTION_URL='http://203.0.113.10:8080/sub/TOKEN' bash -s -- relay
@@ -169,6 +179,7 @@ To view the Direct VLESS Link on the server (an exit node shown; a relay uses
 sudo cat /opt/cloud-xray-exit/vless-uri.txt
 ```
 
+> [!NOTE]
 > The Clash YAML and the VLESS URI intentionally keep their own field names
 > (`network: tcp`, `reality-opts.public-key`, `type=tcp`, `pbk=…`). This is
 > expected — do not rename them to the Xray JSON field names.
@@ -216,11 +227,59 @@ more:
 
 ## Appendix
 
-### A. Firewall (ufw / firewalld)
+### A. SSH Key Generation
 
-Opening ports in the cloud console is not always sufficient — the operating
-system may also run a local firewall. Only configure the one that is **already
-active**; do not enable a firewall solely for RayLink.
+If you do not already have an SSH key pair, you must generate one locally.
+ED25519 is recommended for modern security and performance; RSA 4096-bit is a widely
+compatible legacy fallback.
+
+To generate an ED25519 key pair at the default location (`~/.ssh/id_ed25519`):
+
+```bash
+ssh-keygen -t ed25519 -C "you@example.com"
+```
+
+Or a legacy RSA 4096-bit key pair:
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "you@example.com" -f ~/.ssh/id_rsa
+```
+
+You will be prompted for a private key passphrase:
+
+- **Leave it empty** (press Enter twice) for convenience.
+- **Set a passphrase** for better security — you will enter it whenever the key
+  is used.
+
+Press Enter to accept the default save location. Afterwards you have two files:
+
+- `id_ed25519` (or `id_rsa`) — the **private key**. Never share it.
+- `id_ed25519.pub` (or `id_rsa.pub`) — the **public key**. Safe to upload to your
+  VPS provider.
+
+Copy the public key to your clipboard, then paste it into your provider's
+**SSH Keys** page (the "Key Name" is just a label and does not affect
+authentication):
+
+```bash
+# macOS
+pbcopy < ~/.ssh/id_ed25519.pub
+
+# Linux (X11 / Wayland)
+xclip -sel clip < ~/.ssh/id_ed25519.pub   # or: wl-copy < ~/.ssh/id_ed25519.pub
+```
+
+```powershell
+# Windows (PowerShell)
+Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | Set-Clipboard
+```
+
+### B. Firewall (ufw / firewalld)
+
+Opening ports in your cloud provider's web console may not be sufficient if your
+server's operating system runs a local software firewall. You should only configure
+the firewall that is **already active** on your system; do not enable a firewall
+daemon solely for RayLink.
 
 **ufw (Debian/Ubuntu).** Check whether it is active:
 
@@ -257,46 +316,224 @@ sudo firewall-cmd --list-ports
 # expected: 443/tcp 8080/tcp
 ```
 
-### B. SSH Key Generation
+---
 
-If you do not already have a key pair, generate one locally. ED25519 is
-preferred (short and modern); RSA with a 4096-bit key is a widely compatible
-alternative.
+## 中文
 
-Generate an ED25519 key (saved to the default `~/.ssh/id_ed25519`):
+本指南将协助您在一台全新的 Linux 服务器上完成节点部署与客户端配置导入。本教程中的步骤适用于所有类型的节点，针对特定节点类型的详细选项请参阅 [exit.md](exit.md) 与 [relay.md](relay.md)。
+
+本文所有示例均使用文档保留 IP `203.0.113.10`，请在实际操作中替换为您服务器的公网 IP 地址。
+
+### 1. 准备工作
+
+#### 1.1 选择 VPS
+
+您需要准备一台配置有公网 IP（支持 IPv4 或 IPv6）且启用了 SSH 登录的 Linux 云服务器。常见的服务商（如 AWS EC2、Google Cloud、Oracle Cloud、Azure、Vultr 以及各类高性价比 VPS 服务商）均可满足要求。推荐使用 Ubuntu Server（24.04 LTS 或更高版本），个人用户选择最低规格的实例即可。
+
+**配置示例：AWS EC2**
+
+- 推荐操作系统：
+  ```text
+  Ubuntu Server 26.04 LTS
+  ```
+- 推荐实例类型（个人使用）：
+  ```text
+  t3.micro
+  ```
+
+在控制台创建实例时的关键设置：
+
+- 新建或选择一个 SSH 密钥对（详见 [1.2](#12-创建-ssh-密钥对)）。
+- 在关联的安全组中放行入站 TCP 端口 `22`、`443` 和 `8080`（详见 [1.3](#13-配置防火墙)）。
+- 关联或分配一个公网 IPv4（或 IPv6）地址。
+
+> [!IMPORTANT]
+> AWS 生成的私钥文件（`.pem` 格式）仅在创建时提供一次下载机会，请妥善保管。
+
+#### 1.2 创建 SSH 密钥对
+
+SSH 服务采用非对称加密方式进行身份验证。它由一对密钥组成：**私钥**安全存放在您的本地计算机上，**公钥**则配置在目标云服务器中。
+
+某些云服务商在实例初始化时会自动为您生成密钥对（例如 AWS 会引导您下载私钥的 `.pem` 文件），而有些服务商则要求您手动上传已有的公钥。若您尚未创建密钥对，请参考 [附录 A](#a-ssh-密钥生成) 进行本地生成。
+
+默认情况下，密钥对会保存在本地的 `~/.ssh` 目录下。以下是常用的标准密钥文件名，大多数 SSH 客户端均可自动识别并调用：
+
+| 算法 | 私钥文件名 | 公钥文件名 |
+|---|---|---|
+| ED25519 (推荐) | `id_ed25519` | `id_ed25519.pub` |
+| RSA (≥ 2048-bit) | `id_rsa` | `id_rsa.pub` |
+| ECDSA | `id_ecdsa` | `id_ecdsa.pub` |
+
+您只需将 `.pub` 后缀的公钥内容上传或粘贴至云服务商控制台。**在任何情况下都切勿向外界泄露您的私钥文件。**
+
+#### 1.3 配置网络与防火墙安全策略
+
+请在您的云服务商防火墙或网络安全组（Security Group）中配置入站规则，放行以下 TCP 端口：
+
+| 端口 | 允许源 IP | 端口用途 |
+|---|---|---|
+| `22` | 仅限您的本地 IP | 安全 SSH 远程登录 |
+| `443` | `0.0.0.0/0` (IPv6 为 `::/0`) | Xray Reality 服务端口 |
+| `8080` | 建议仅限您的本地 IP | HTTP 订阅文件分发服务 (可选) |
+
+配置要点：
+
+- **无需启用 UDP**：Xray VLESS Reality 基于 TCP 传输协议，因此防火墙仅需放行 TCP 流量。
+- **敏感信息防护**：由于 HTTP 订阅链接中包含节点的完整连接配置，建议将 `8080` 端口的源 IP 限制为您自己的 IP，或在客户端成功导入订阅后，在控制台中关闭该端口。
+- **中转（Relay）模式配置**：在中转架构下，出口节点只需向中转节点的公网 IP 开放代理端口（默认 `443`），具体配置请参考 [relay.md](relay.md)。
+
+> [!WARNING]
+> **常见排查难点**
+> 仅在云服务商的控制面板放行端口有时并不够。许多 Linux 镜像内置并默认启用了本地防火墙服务（如 `ufw` 或 `firewalld`），这可能导致外部请求在系统底层被拦截。如果您确认云控制台配置正确但客户端依旧无法连接，请参阅 [附录 B](#b-防火墙-ufw--firewalld)。
+
+#### 1.4 通过 SSH 建立连接
+
+在本地终端（Windows 环境下可使用 PowerShell 或 CMD，macOS/Linux 环境下使用终端）中执行以下连接指令：
 
 ```bash
-ssh-keygen -t ed25519 -C "you@example.com"
+ssh -i [KEY_FILE] [USERNAME]@[SERVER_PUBLIC_IP]
 ```
 
-Or an RSA key at an explicit path:
+- `[KEY_FILE]`：您本地私钥文件的存储路径（例如 `key.pem` 或 `~/.ssh/id_ed25519`）。
+- `[USERNAME]`：服务器的系统默认登录用户名。Ubuntu 系统镜像通常为 `ubuntu`，Debian 镜像为 `debian`，CentOS 等其他系统可能是 `root` 或 `admin`。
+- `[SERVER_PUBLIC_IP]`：目标云服务器的公网 IP 地址。
+
+使用示例：
 
 ```bash
-ssh-keygen -t rsa -b 4096 -C "you@example.com" -f ~/.ssh/id_rsa
+ssh -i key.pem ubuntu@203.0.113.10
 ```
 
-You will be prompted for a passphrase:
+首次建立连接时，SSH 客户端会要求您确认服务器的安全指纹。输入 `yes` 并按下回车以完成信任关系绑定。
 
-- **Leave it empty** (press Enter twice) for convenience.
-- **Set a passphrase** for better security — you will enter it whenever the key
-  is used.
+### 2. 安装与运行 RayLink
 
-Press Enter to accept the default save location. Afterwards you have two files:
+#### 部署出口节点 (Exit Node)
 
-- `id_ed25519` (or `id_rsa`) — the **private key**. Never share it.
-- `id_ed25519.pub` (or `id_rsa.pub`) — the **public key**. Safe to upload to your
-  VPS provider.
+**出口节点**承载完整的代理访问流量：客户端直接连接至该节点，再由该节点直接访问目标互联网资源。请在服务器的 SSH 终端中运行以下一键部署脚本：
 
-Copy the public key to your clipboard, then paste it into your provider's
-**SSH Keys** page (the "Key Name" is just a label and does not affect
-authentication):
+```bash
+curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo bash -s -- exit
+```
+
+部署完成后，安装程序会直接输出您的订阅及节点连接信息（该内容也会同步保存至 `/opt/cloud-xray-exit/server-info.txt` 供日后查阅）。随后可进入第 3 步：[导入客户端配置](#3-导入客户端配置)。
+
+若您希望自定义配置（如修改监听端口、切换 DNS Profile 或启用 IPv6 支持），可通过在脚本前置传入环境变量实现，详见 [configuration.md](configuration.md)。例如，将代理监听端口指定为 `8443`：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env PORT=8443 bash -s -- exit
+```
+
+#### 部署中转节点 (Relay Node)
+
+**中转节点**用于将客户端的连接中继转发至后端的出口节点（数据流向：`客户端 → 中转节点 → 出口节点 → 目标互联网`）。请先完成出口节点的部署，并获取其 **Universal Subscription URL**，然后在第二台服务器（中转服务器）上运行以下命令：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env UPSTREAM_SUBSCRIPTION_URL='http://203.0.113.10:8080/sub/TOKEN' bash -s -- relay
+```
+
+> [!NOTE]
+> 请将示例中的 `203.0.113.10:8080/sub/TOKEN` 替换为您出口服务器上实际生成的 Universal 订阅链接。关于定义上游出口参数的其他高级方案，请参阅 [relay.md](relay.md)。
+
+### 3. 导入客户端配置
+
+部署完成后，RayLink 会生成以下三种链接，请根据您所使用的代理软件客户端进行选择：
+
+| 订阅链接类型 | 链接形式 | 适用客户端 |
+|---|---|---|
+| **Universal Subscription URL** | `http://SERVER:8080/sub/TOKEN` | 自动协商格式，支持常规订阅导入的客户端，如 v2rayN、v2rayNG、Hiddify、Shadowrocket、NekoBox 等 |
+| **Clash Subscription URL** | `http://SERVER:8080/sub/TOKEN/clash.yaml` | 仅限 Clash/Mihomo 核心的客户端，如 Mihomo、Clash Meta、FlClash、Clash Verge Rev |
+| **Direct VLESS Link** | `vless://…` | 用于手动导入单个节点信息，不依赖订阅分发服务 |
+
+- **启用 HTTP 订阅时**：部署程序将同时提供 **Universal** 和 **Clash** 订阅链接；
+- **禁用 HTTP 订阅时**：程序将仅输出 **Direct VLESS Link**。
+
+对于 Clash/Mihomo 系列客户端，导入 Clash 订阅链接后，请在代理组中将 `GLOBAL` 设置为您所部署的节点，并开启系统代理（System Proxy）或 TUN 模式。
+
+在服务器终端上查看 Direct VLESS 链接的方法（以出口节点为例，中转节点请查看 `/opt/cloud-xray-relay` 对应目录）：
+
+```bash
+sudo cat /opt/cloud-xray-exit/vless-uri.txt
+```
+
+> [!NOTE]
+> Clash 配置文件及 VLESS URI 连接串将保留其专用的字段命名规范（如 `network: tcp`、`reality-opts.public-key`、`type=tcp`、`pbk=...` 等）。这些格式均由各大客户端标准定义，请勿将其手动修改为 Xray JSON配置的命名格式。
+
+### 4. 下载配置文件
+
+如果您不希望开启公网 HTTP 订阅，可在本地计算机的终端中使用 `scp` 命令，通过 SSH 安全协议将生成的配置文件下载至本地：
+
+```bash
+scp -i [KEY_FILE] [USERNAME]@[SERVER_PUBLIC_IP]:[REMOTE_PATH] [LOCAL_PATH]
+```
+
+示例：下载 Clash 配置文件至当前目录并重命名：
+
+```bash
+scp -i key.pem ubuntu@203.0.113.10:/opt/cloud-xray-exit/clash.yaml ./raylink-clash.yaml
+```
+
+示例：下载包含 Direct VLESS 链接的文件至当前目录：
+
+```bash
+scp -i key.pem ubuntu@203.0.113.10:/opt/cloud-xray-exit/vless-uri.txt ./vless-uri.txt
+```
+
+### 5. 后续运维管理
+
+您可以在服务器上随时通过以下 CLI 命令对节点进行更新或自检：
+
+```bash
+sudo raylink exit                 # 重新运行或更新（操作具备幂等性，可安全重复执行）
+sudo raylink exit --health-check  # 手动触发一次节点状态自愈与检测
+sudo raylink version             # 查看当前 RayLink 的版本号
+```
+
+服务器已默认启用 systemd 定时任务，在后台对服务状态和 Reality 目标域名进行定期健康监控与自愈重建。如需获取更深入的技术细节，请阅读以下参考文档：
+
+- [exit.md](exit.md) —— 出口节点详细部署参数、架构说明及自恢复逻辑。
+- [relay.md](relay.md) —— 中转模式工作流、上游参数管理及专属防火墙设置。
+- [configuration.md](configuration.md) —— 每一个环境变量配置字段的参考指南。
+- [troubleshooting.md](troubleshooting.md) —— 常见连接排查、IPv6 部署指南及无痕卸载方法。
+
+---
+
+## 附录
+
+### A. SSH 密钥生成
+
+若您尚未在本地生成过密钥对，请参照此步骤进行创建。目前推荐使用安全性与速度兼备的 ED25519 算法（生成的文件体积小且更加现代）；RSA 4096 位算法则作为高兼容性的备选方案。
+
+在本地终端中生成 ED25519 密钥对（将默认保存至本地的 `~/.ssh/id_ed25519`）：
+
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+
+或者在指定路径下生成高强度的 RSA 4096 密钥对：
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ~/.ssh/id_rsa
+```
+
+生成过程中会提示您为私钥设置密码短语（Passphrase）：
+
+- **直接按两次回车（不设密码）**：密钥读取更便捷，适合自动化免密连接。
+- **设置独立密码**：增强密钥安全性。每次调用该密钥进行 SSH 登录时，系统均会要求您输入此密码。
+
+密钥对生成后，您将获得以下两个核心文件：
+
+- `id_ed25519`（或 `id_rsa`）：**私钥文件**。请严格保存在您的本地个人电脑中，在任何情况下均不要分享或上传。
+- `id_ed25519.pub`（或 `id_rsa.pub`）：**公钥文件**。用于提供给云服务商，配置到服务器的受信密钥列表中。
+
+您可以通过以下指令将公钥文件的内容一键复制到剪贴板，随后粘贴至云控制面板的 **SSH Keys** 新建窗口中（控制台里的 "Key Name" 仅做备注标识，不影响身份鉴权）：
 
 ```bash
 # macOS
 pbcopy < ~/.ssh/id_ed25519.pub
 
-# Linux (X11 / Wayland)
-xclip -sel clip < ~/.ssh/id_ed25519.pub   # or: wl-copy < ~/.ssh/id_ed25519.pub
+# Linux (X11 环境 / Wayland 环境)
+xclip -sel clip < ~/.ssh/id_ed25519.pub   # 或：wl-copy < ~/.ssh/id_ed25519.pub
 ```
 
 ```powershell
@@ -304,215 +541,19 @@ xclip -sel clip < ~/.ssh/id_ed25519.pub   # or: wl-copy < ~/.ssh/id_ed25519.pub
 Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | Set-Clipboard
 ```
 
----
+### B. 防火墙配置 (ufw / firewalld)
 
-## 中文
+仅仅在云服务商的管理控制台开放端口有时并不充分，服务器 of Linux 系统中如果启用了系统级本地防火墙，同样需要手动写入端口策略。本部分建议仅在服务器**已启用**本地防火墙时进行配置，请勿为了运行 RayLink 而专门且盲目地开启防火墙。
 
-本指南带你从一台全新的 Linux 服务器,一路完成节点部署和客户端导入。这里的每一步对
-两种节点都适用——节点专属选项见 [exit.md](exit.md) 和 [relay.md](relay.md)。
+**ufw 防火墙（主要用于 Debian / Ubuntu 系统）：**
 
-示例统一使用文档保留 IP `203.0.113.10`,请替换为你自己服务器的地址。
-
-### 1. 准备工作
-
-#### 1.1 选择 VPS
-
-你需要一台有公网 IP(IPv4 或 IPv6)且可 SSH 登录的 Linux 服务器。AWS EC2、Google
-Cloud、Oracle Cloud、Azure、Vultr 以及大多数低价 VPS 均可。推荐 Ubuntu Server
-(24.04 LTS 或更新),个人使用选小规格实例即可。
-
-**示例:AWS EC2**
-
-推荐操作系统:
-
-```text
-Ubuntu Server 26.04 LTS
-```
-
-个人使用推荐实例类型:
-
-```text
-t3.micro
-```
-
-创建实例时:
-
-- 新建或选择一个 SSH Key Pair(见 [1.2](#12-创建-ssh-密钥对))。
-- 在安全组放行入站 TCP 端口 `22`、`443`、`8080`(见 [1.3](#13-配置防火墙))。
-- 分配一个公网 IPv4(或 IPv6)地址。
-
-AWS 会提供一个 `.pem` 私钥文件,只能下载一次,请妥善保存。
-
-#### 1.2 创建 SSH 密钥对
-
-SSH 通过一对密钥验证你的身份:**私钥**留在你自己电脑上,**公钥**放到服务器上。
-
-有些服务商在创建实例时会帮你生成密钥对(AWS 给你一个 `.pem` 私钥下载);有些则要
-求你上传已有的公钥。如果你还没有密钥对,可以在本地生成,完整步骤见
-[附录 B](#b-ssh-密钥生成)。
-
-密钥默认存放在 `~/.ssh` 目录,使用标准文件名,大多数 SSH 客户端会自动识别:
-
-| 算法 | 私钥 | 公钥 |
-|---|---|---|
-| ED25519(推荐) | `id_ed25519` | `id_ed25519.pub` |
-| RSA(≥ 2048 位) | `id_rsa` | `id_rsa.pub` |
-| ECDSA | `id_ecdsa` | `id_ecdsa.pub` |
-
-只需要把 `.pub` 公钥上传给服务商。**切勿泄露私钥。**
-
-#### 1.3 配置防火墙
-
-在云服务商的防火墙(安全组)放行以下入站 TCP 端口:
-
-| 端口 | 来源 | 用途 |
-|---|---|---|
-| `22` | 你的 IP | SSH 登录 |
-| `443` | `0.0.0.0/0`(IPv6 用 `::/0`) | 节点本身 |
-| `8080` | 尽量限制为你的 IP | HTTP 订阅(可选) |
-
-说明:
-
-- Reality over TCP 不需要 UDP,只开 TCP 即可。
-- 订阅链接包含完整客户端配置;`8080` 尽量只对你自己的 IP 开放,或导入后关闭。
-- 对于 **relay**,则是把出口节点的端口对 relay 的 IP 开放——见 [relay.md](relay.md)。
-
-> **常见坑。** 只在云控制台开端口,有时并不够。很多 Linux 镜像还运行着本地防火墙
-> (`ufw` 或 `firewalld`),即使云端规则正确,也可能悄悄拦截流量。如果控制台里端口
-> 看起来是开的但客户端仍连不上,请看 [附录 A](#a-防火墙-ufw--firewalld)。
-
-#### 1.4 通过 SSH 登录
-
-在你电脑上打开终端,使用如下命令:
-
-```bash
-ssh -i [KEY_FILE] [USERNAME]@[SERVER_PUBLIC_IP]
-```
-
-- `[KEY_FILE]` —— 私钥路径(例如 `key.pem`,或 `~/.ssh/id_ed25519`)。
-- `[USERNAME]` —— 默认登录用户。Ubuntu 镜像是 `ubuntu`;其他可能是 `root`、`debian`、`admin`。
-- `[SERVER_PUBLIC_IP]` —— 服务器公网 IP。
-
-示例:
-
-```bash
-ssh -i key.pem ubuntu@203.0.113.10
-```
-
-首次连接会要求确认服务器指纹,输入 `yes` 继续。
-
-### 2. 安装 RayLink
-
-#### 出口节点(Exit)
-
-**出口节点**既是入口也是出口:客户端连接它,它直接出站访问互联网。在服务器上运行:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo bash -s -- exit
-```
-
-结束时安装器会打印订阅链接(也保存在 `/opt/cloud-xray-exit/server-info.txt`)。
-接着看 [3. 导入客户端](#3-导入客户端)。
-
-要自定义安装(端口、DNS profile、IPv6 等)可传环境变量——见
-[configuration.md](configuration.md)。示例,使用 `8443` 端口:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env PORT=8443 bash -s -- exit
-```
-
-#### 中转节点(Relay)
-
-**中转节点**把所有客户端流量转发到一个已有的出口节点
-(`客户端 → Relay → Exit → 互联网`)。先部署好出口节点,拿到它的
-**Universal Subscription URL**,再在第二台服务器上运行:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env UPSTREAM_SUBSCRIPTION_URL='http://203.0.113.10:8080/sub/TOKEN' bash -s -- relay
-```
-
-把 `203.0.113.10:8080/sub/TOKEN` 换成你出口节点真实的 Universal Subscription URL。
-其他提供 upstream 的方式见 [relay.md](relay.md)。
-
-### 3. 导入客户端
-
-安装器提供三种链接,按你的客户端支持情况选用:
-
-| 链接 | 地址 | 适用于 |
-|---|---|---|
-| **Universal Subscription URL** | `http://SERVER:8080/sub/TOKEN` | 自动协商格式,支持订阅导入的客户端 —— v2rayN、v2rayNG、Hiddify、Shadowrocket、NekoBox 等 |
-| **Clash Subscription URL** | `http://SERVER:8080/sub/TOKEN/clash.yaml` | 仅 Clash 系客户端 —— Mihomo、Clash Meta、FlClash、Clash Verge Rev |
-| **Direct VLESS Link** | `vless://…` | 手动导入单个节点,不经过订阅 |
-
-开启 HTTP 订阅时,安装器打印两个订阅链接;关闭时,则打印 Direct VLESS Link。
-
-Clash/Mihomo 客户端:导入 Clash Subscription URL,在 `GLOBAL` 代理组里选择你的
-节点,然后开启系统代理或 TUN 模式。
-
-在服务器上查看 Direct VLESS Link(以出口节点为例;relay 使用
-`/opt/cloud-xray-relay`):
-
-```bash
-sudo cat /opt/cloud-xray-exit/vless-uri.txt
-```
-
-> Clash YAML 和 VLESS URI 会保留各自的字段名(`network: tcp`、
-> `reality-opts.public-key`、`type=tcp`、`pbk=…`)。这是正常的,不要把它们改成
-> Xray JSON 的字段名。
-
-### 4. 下载配置
-
-在你的**本地**终端用 `scp` 把生成的文件拷回电脑:
-
-```bash
-scp -i [KEY_FILE] [USERNAME]@[SERVER_PUBLIC_IP]:[REMOTE_PATH] [LOCAL_PATH]
-```
-
-示例 —— 下载 Clash 配置:
-
-```bash
-scp -i key.pem ubuntu@203.0.113.10:/opt/cloud-xray-exit/clash.yaml ./raylink-clash.yaml
-```
-
-示例 —— 下载 Direct VLESS Link 文件:
-
-```bash
-scp -i key.pem ubuntu@203.0.113.10:/opt/cloud-xray-exit/vless-uri.txt ./vless-uri.txt
-```
-
-### 5. 后续
-
-随时在服务器上管理节点:
-
-```bash
-sudo raylink exit                 # 重新运行 / 更新(安全、幂等)
-sudo raylink exit --health-check  # 立即运行一次自检
-sudo raylink version
-```
-
-systemd timer 已经在定期自检并自愈。想深入了解:
-
-- [exit.md](exit.md) —— 出口节点安装、选项、自检。
-- [relay.md](relay.md) —— 中转模型、upstream 参数、防火墙。
-- [configuration.md](configuration.md) —— 所有环境变量。
-- [troubleshooting.md](troubleshooting.md) —— 常见问题、IPv6、卸载。
-
----
-
-## 附录
-
-### A. 防火墙(ufw / firewalld)
-
-只在云控制台开端口有时不够——操作系统本身可能也在跑本地防火墙。只配置**已经启用**
-的那个;不要为了 RayLink 专门去启用一个防火墙。
-
-**ufw(Debian/Ubuntu)。** 先检查是否启用:
+首先运行以下命令检查防火墙的启用状态：
 
 ```bash
 sudo ufw status
 ```
 
-如果输出以 `Status: active` 开头,放行端口:
+如果输出内容为 `Status: active`，说明防火墙已在运行，请执行以下指令放行代理及订阅服务的 TCP 端口：
 
 ```bash
 sudo ufw allow 443/tcp
@@ -520,13 +561,15 @@ sudo ufw allow 8080/tcp
 sudo ufw reload
 ```
 
-**firewalld(RHEL/Fedora/CentOS)。** 检查是否在运行:
+**firewalld 防火墙（主要用于 RHEL / CentOS / Rocky Linux 等系统）：**
+
+执行以下命令检查防火墙服务是否处于活动状态：
 
 ```bash
 sudo systemctl is-active firewalld
 ```
 
-如果输出是 `active`,放行端口并重载:
+如果输出结果为 `active`，请通过以下指令允许相关 TCP 端口通过并热重载防火墙：
 
 ```bash
 sudo firewall-cmd --permanent --add-port=443/tcp
@@ -534,52 +577,9 @@ sudo firewall-cmd --permanent --add-port=8080/tcp
 sudo firewall-cmd --reload
 ```
 
-验证:
+运行以下命令验证策略是否已成功应用：
 
 ```bash
 sudo firewall-cmd --list-ports
-# 预期输出:443/tcp 8080/tcp
-```
-
-### B. SSH 密钥生成
-
-如果还没有密钥对,在本地生成一个。推荐 ED25519(短小、现代);RSA 4096 位是兼容性
-更广的备选。
-
-生成 ED25519 密钥(保存到默认的 `~/.ssh/id_ed25519`):
-
-```bash
-ssh-keygen -t ed25519 -C "you@example.com"
-```
-
-或在指定路径生成 RSA 密钥:
-
-```bash
-ssh-keygen -t rsa -b 4096 -C "you@example.com" -f ~/.ssh/id_rsa
-```
-
-过程中会提示设置 passphrase:
-
-- **留空**(连按两次 Enter)更方便。
-- **设置 passphrase** 更安全——每次使用密钥都要输入它。
-
-按 Enter 使用默认保存位置。之后你会得到两个文件:
-
-- `id_ed25519`(或 `id_rsa`)—— **私钥**,切勿泄露。
-- `id_ed25519.pub`(或 `id_rsa.pub`)—— **公钥**,可以安全上传给 VPS 服务商。
-
-把公钥复制到剪贴板,再粘贴到服务商的 **SSH Keys** 页面("Key Name" 只是标签,不
-影响认证):
-
-```bash
-# macOS
-pbcopy < ~/.ssh/id_ed25519.pub
-
-# Linux(X11 / Wayland)
-xclip -sel clip < ~/.ssh/id_ed25519.pub   # 或:wl-copy < ~/.ssh/id_ed25519.pub
-```
-
-```powershell
-# Windows(PowerShell)
-Get-Content "$env:USERPROFILE\.ssh\id_ed25519.pub" | Set-Clipboard
+# 预期输出应包含: 443/tcp 8080/tcp
 ```
