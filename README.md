@@ -73,15 +73,17 @@ following deployment command:
 curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env UPSTREAM_SUBSCRIPTION_URL='http://EXIT_IP:8080/sub/TOKEN' bash -s -- relay
 ```
 
+> Replace `http://EXIT_IP:8080/sub/TOKEN` with your exit's actual Universal Subscription URL.
+
 ### Documentation
 
 | Doc | Contents |
 |---|---|
-| [getting-started](docs/getting-started.md) | Start here — server prep, SSH, importing into clients, downloading config |
-| [exit](docs/exit.md) | Exit node — installation, configuration, management, and health checks |
-| [relay](docs/relay.md) | Relay node — architecture, upstream parameters, and firewall configuration |
-| [configuration](docs/configuration.md) | Every environment variable — ports, Reality, DNS profiles, IPv6, metrics, downloads |
-| [troubleshooting](docs/troubleshooting.md) | Common issues, IPv6-only servers, uninstall |
+| [getting-started.md](docs/getting-started.md) | Start here — server prep, SSH, importing into clients, downloading config |
+| [exit.md](docs/exit.md) | Exit node — installation, configuration, management, and health checks |
+| [relay.md](docs/relay.md) | Relay node — architecture, upstream parameters, and firewall configuration |
+| [configuration.md](docs/configuration.md) | Every environment variable — ports, Reality, DNS profiles, IPv6, metrics, downloads |
+| [troubleshooting.md](docs/troubleshooting.md) | Common issues, IPv6-only servers, uninstall |
 
 ### Project layout
 
@@ -110,7 +112,7 @@ provider to avoid unexpected charges caused by quota exhaustion or node abuse.
 
 ### License
 
-Released under the [MIT License](./LICENSE).
+Released under the [MIT License](LICENSE).
 
 ---
 
@@ -170,15 +172,17 @@ sudo raylink exit --health-check  # 立即运行一次自检
 curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env UPSTREAM_SUBSCRIPTION_URL='http://EXIT_IP:8080/sub/TOKEN' bash -s -- relay
 ```
 
+> 运行上面命令时请将示例中的 `http://EXIT_IP:8080/sub/TOKEN` 替换为您出口服务器上实际生成的 Universal 订阅链接。
+
 ### 文档
 
 | 文档 | 内容 |
 |---|---|
-| [getting-started](docs/getting-started.md) | 从这里开始 — 服务器准备、SSH、客户端导入、下载配置 |
-| [exit](docs/exit.md) | 出口节点 — 安装、选项、管理、自检 |
-| [relay](docs/relay.md) | 中转节点 — 模型、upstream 参数、防火墙 |
-| [configuration](docs/configuration.md) | 所有环境变量 — 端口、Reality、DNS profile、IPv6、metrics、下载 |
-| [troubleshooting](docs/troubleshooting.md) | 常见问题、IPv6-only 服务器、卸载 |
+| [getting-started.md](docs/getting-started.md) | 从这里开始 — 服务器准备、SSH、客户端导入、下载配置 |
+| [exit.md](docs/exit.md) | 出口节点 — 安装、选项、管理、自检 |
+| [relay.md](docs/relay.md) | 中转节点 — 模型、upstream 参数、防火墙 |
+| [configuration.md](docs/configuration.md) | 所有环境变量 — 端口、Reality、DNS profile、IPv6、metrics、下载 |
+| [troubleshooting.md](docs/troubleshooting.md) | 常见问题、IPv6-only 服务器、卸载 |
 
 > 部分文档为英文。
 
@@ -208,4 +212,4 @@ raylink/
 
 ### 开源协议
 
-本项目基于 [MIT License](./LICENSE) 发布。
+本项目基于 [MIT License](LICENSE) 发布。
