@@ -4,22 +4,22 @@
 
 This guide takes you from a bare Linux server to a working node and imported
 client. Every step here is shared by both node types — for node-specific options
-see [exit.md](exit.md) and [relay.md](relay.md).
+see [exit](exit.md) and [relay](relay.md).
 
 Examples use the documentation IP `203.0.113.10`; substitute your own server's
 address throughout.
 
 ---
 
-## English
+## Guide
 
 ### 1. Prerequisites
 
 #### 1.1 Choose a VPS
 
 You need a Linux server with a public IP address (IPv4 or IPv6) and SSH access.
-Any major cloud hosting provider is compatible, including AWS EC2, Google Cloud,
-Oracle Cloud, Microsoft Azure, Vultr, or low-cost VPS hosts. Ubuntu Server (24.04
+Any major cloud hosting provider is compatible, including AWS, Google Cloud,
+Oracle Cloud, Microsoft Azure, or low-cost VPS hosts. Ubuntu Server (24.04
 LTS or newer) is recommended. A minimum resource specification (e.g., 1 vCPU,
 512MB RAM) is more than sufficient for personal proxy requirements.
 
@@ -318,9 +318,9 @@ sudo firewall-cmd --list-ports
 
 ---
 
-## 中文
+## 指南
 
-本指南将协助您在一台全新的 Linux 服务器上完成节点部署与客户端配置导入。本教程中的步骤适用于所有类型的节点，针对特定节点类型的详细选项请参阅 [exit.md](exit.md) 与 [relay.md](relay.md)。
+本指南将协助您在一台全新的 Linux 服务器上完成节点部署与客户端配置导入。本教程中的步骤适用于所有类型的节点，针对特定节点类型的详细选项请参阅 [exit](exit.md) 与 [relay](relay.md)。
 
 本文所有示例均使用文档保留 IP `203.0.113.10`，请在实际操作中替换为您服务器的公网 IP 地址。
 
@@ -328,7 +328,7 @@ sudo firewall-cmd --list-ports
 
 #### 1.1 选择 VPS
 
-您需要准备一台配置有公网 IP（支持 IPv4 或 IPv6）且启用了 SSH 登录的 Linux 云服务器。常见的服务商（如 AWS EC2、Google Cloud、Oracle Cloud、Azure、Vultr 以及各类高性价比 VPS 服务商）均可满足要求。推荐使用 Ubuntu Server（24.04 LTS 或更高版本），个人用户选择最低规格的实例即可。
+您需要准备一台配置有公网 IP（支持 IPv4 或 IPv6）且启用了 SSH 登录的 Linux 云服务器。常见的服务商（如 AWS、Google Cloud、Oracle Cloud、Azure 以及各类高性价比 VPS 服务商）均可满足要求。推荐使用 Ubuntu Server（24.04 LTS 或更高版本），个人用户选择最低规格的实例即可。
 
 **配置示例：AWS EC2**
 
