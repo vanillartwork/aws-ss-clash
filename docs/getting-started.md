@@ -501,7 +501,7 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 在服务器终端上查看订阅链接的方法（以出口节点为例，中转节点请替换对应目录为 `/opt/cloud-xray-relay`）：
 
 ```bash
-sudo cat /opt/cloud-xray-exit/vless-uri.txt
+sudo cat /opt/cloud-xray-exit/subscription.env
 ```
 
 在服务器终端上查看 VLESS 链接的方法（以出口节点为例，中转节点请替换对应目录为 `/opt/cloud-xray-relay`）：
