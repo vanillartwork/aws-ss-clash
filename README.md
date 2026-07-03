@@ -57,7 +57,7 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 
 The installer prints a **Universal Subscription URL** and a **Clash
 Subscription URL** at the end — import whichever your client supports (see
-[importing into clients](docs/getting-started.md)).
+[importing into clients](docs/getting-started.md#c-recommended-clients-by-os)).
 
 Manage the node later:
 
@@ -155,7 +155,7 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 ```
 
 安装结束时会打印 **Universal Subscription URL** 和 **Clash Subscription URL**，
-按你的客户端支持情况导入即可（客户端兼容性见[客户端导入](docs/getting-started.md)）。
+按你的客户端支持情况导入即可（客户端兼容性见[客户端导入](docs/getting-started.md#c-各系统主流客户端推荐)）。
 
 之后管理节点：
 
