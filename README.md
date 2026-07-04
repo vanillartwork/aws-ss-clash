@@ -114,6 +114,12 @@ provider to avoid unexpected charges caused by quota exhaustion or node abuse.
 
 Released under the [MIT License](LICENSE).
 
+### Disclaimer
+
+By using this software, you agree to comply with all applicable laws and
+regulations in your jurisdiction. The developers are not responsible for
+any misuse of this software. For more information, please see [DISCLAIMER](DISCLAIMER.md).
+
 ---
 
 ## 中文
@@ -213,3 +219,7 @@ raylink/
 ### 开源协议
 
 本项目基于 [MIT License](LICENSE) 发布。
+
+### 免责声明
+
+通过使用本软件，即表示您同意遵守所在司法管辖区内所有适用的法律法规。开发者不对本软件的任何滥用行为承担责任。更多信息请参阅 [DISCLAIMER](DISCLAIMER.md)。
