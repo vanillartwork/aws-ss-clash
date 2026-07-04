@@ -68,6 +68,8 @@ The developer hereby declares that:
 
 ### 7. Disclaimer of Warranties & Security
 
+The Software is provided "as is" and "as available", without warranties of any kind, whether express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement.
+
 While the developer has taken reasonable measures to ensure the security and stability of the Software, due to technical complexities, the developer cannot guarantee that:
 
 1. The Software is completely free of bugs, unknown vulnerabilities, or functional defects;
@@ -86,10 +88,11 @@ Users should evaluate system-level risks independently and implement data backup
 
 The project name, logo, icons, and related brand identifiers of this Tool (if any) are not covered by the MIT License. Without prior permission, no person may use them in any way that implies an official version, official endorsement, or affiliation with the developer.
 
-### 10. Limitation of Liability and Severability
+### 10. Limitation of Liability, No Waiver, and Severability
 
 1. **Limitation of Liability**: To the maximum extent permitted by applicable law, the developer shall not be liable for any loss of profits, business interruption, loss of data, or any other indirect or consequential damages, even if the developer has been advised of the possibility of such damages.
-2. **Severability**: If any provision of this disclaimer is found to be invalid, illegal, or unenforceable under applicable law, such invalidity shall not affect the validity of the remaining provisions, which shall remain in full force and effect.
+2. **No Waiver**: Any failure or delay by the developer in exercising or enforcing any right under this Disclaimer or applicable law shall not be deemed a waiver of that right, nor affect the developer's ability to exercise it in the future.
+3. **Severability**: If any provision of this disclaimer is found to be invalid, illegal, or unenforceable under applicable law, such invalidity shall not affect the validity of the remaining provisions, which shall remain in full force and effect.
 
 ### 11. Modification of this Disclaimer
 
@@ -164,6 +167,8 @@ The developer may update this Disclaimer from time to time. Updated versions tak
 
 ### 七、 软件安全性与漏洞免责
 
+本工具按"现状"（as is）及"现有可用"（as available）状态提供，不附带任何明示或默示的担保，包括但不限于对适销性（merchantability）、特定用途适用性（fitness for a particular purpose）及不侵权（non-infringement）的担保。
+
 开发者已采取合理措施保证软件的稳定与安全性，但受限于技术限制，开发者无法保证：
 
 1. 软件不存在任何潜在缺陷、未知安全漏洞或未知 Bug；
@@ -182,10 +187,11 @@ The developer may update this Disclaimer from time to time. Updated versions tak
 
 本工具的项目名称、Logo、图标及相关品牌标识（如有）不属于 MIT License 的授权范围。未经许可，不得以任何方式暗示其为官方版本、获得官方认可或与开发者存在关联。
 
-### 十、 责任限制与可分割性
+### 十、 责任限制、权利不放弃与可分割性
 
 1. **责任限制**：在适用法律允许的最大范围内，开发者对于因使用或无法使用本工具而导致的任何利润损失、商业中断、商业信息丢失或任何间接损失，概不承担赔偿责任；即使开发者已被告知该等损失发生的可能性亦然。
-2. **可分割性**：若本声明中的任何条款因法律原因被裁定为无效或不可执行，该条款将被视为可分割的，且不影响本声明其他条款的有效性及执行力。
+2. **权利不放弃**：开发者未行使、延迟行使或未充分行使本免责声明或法律规定所享有的任何权利，不应被视为放弃该权利，也不影响开发者在将来行使该权利。
+3. **可分割性**：若本声明中的任何条款因法律原因被裁定为无效或不可执行，该条款将被视为可分割的，且不影响本声明其他条款的有效性及执行力。
 
 ### 十一、 免责声明的修改
 
