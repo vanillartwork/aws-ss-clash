@@ -178,7 +178,7 @@ sudo raylink exit --health-check  # 立即运行一次自检
 curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo env UPSTREAM_SUBSCRIPTION_URL='http://EXIT_IP:8080/sub/TOKEN' bash -s -- relay
 ```
 
-> 运行上面命令时请将示例中的 `http://EXIT_IP:8080/sub/TOKEN` 替换为您出口服务器上实际生成的 Universal 订阅链接。
+> 请将示例中的 `http://EXIT_IP:8080/sub/TOKEN` 替换为您出口服务器上实际生成的 Universal 订阅链接。
 
 ### 文档
 
