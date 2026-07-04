@@ -132,7 +132,7 @@ curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.
 ```
 
 When it finishes, the installer prints your subscription URLs (also saved to
-`/opt/cloud-xray-exit/server-info.txt`). Continue to [3](#3-import-into-clients).
+`/opt/cloud-xray-exit/server-info.txt`). To continue, see [3](#3-import-into-clients).
 
 To customize the install (ports, DNS profile, IPv6, etc.), pass environment
 variables — see [configuration](configuration.md). Example, using port `8443`:
@@ -457,7 +457,7 @@ ssh -i key.pem ubuntu@203.0.113.10
 curl -fsSL https://raw.githubusercontent.com/vanillartwork/raylink/main/install.sh | sudo bash -s -- exit
 ```
 
-部署完成后，安装程序会直接输出您的订阅及节点连接信息（该内容也会同步保存至 `/opt/cloud-xray-exit/server-info.txt` 供日后查阅）。随后可进入 [3](#3-导入客户端配置)。
+部署完成后，安装程序会直接输出您的订阅及节点连接信息（该内容也会同步保存至 `/opt/cloud-xray-exit/server-info.txt` 供日后查阅）。随后可进入下一步，详见 [3](#3-导入客户端配置)。
 
 若您希望自定义配置（如修改监听端口、切换 DNS Profile 或启用 IPv6 支持），可通过在脚本前置传入环境变量实现，详见 [configuration](configuration.md). 例如，将代理监听端口指定为 `8443`：
 
