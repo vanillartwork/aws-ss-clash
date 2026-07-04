@@ -6,9 +6,6 @@
 
 ## English
 
-> **In short:** This tool is a neutral network technology. Use it only for lawful,
-> compliant purposes. You are solely responsible for your own deployment and use.
-
 ### 1. Software Nature and Technical Neutrality
 
 This software (hereinafter referred to as the "Software" or "Tool") is a general-purpose network forwarding and proxy utility. The Software itself does not provide, host, or broadcast any content, websites, services, or network resources, nor does it actively modify, monitor, intercept, or store any data transmitted by the user through the Tool.
@@ -106,8 +103,6 @@ The developer may update this Disclaimer from time to time. Updated versions tak
 
 ## 中文
 
-> **一句话说明：** 本工具是中立的网络技术，请仅用于合法、合规的用途；你对自己的部署和使用负全部责任。
-
 ### 一、 工具性质与技术中立性
 
 本软件（以下简称"本工具"）是一款通用的网络转发与代理技术工具。本工具本身不提供任何内容、网站、数据、网络服务或数字资源，亦不主动修改、监控、干预或存储用户通过本工具传输的任何数据。
@@ -130,7 +125,7 @@ The developer may update this Disclaimer from time to time. Updated versions tak
 3. 传播、分发恶意代码、木马、病毒或其他有害程序；
 4. 开展网络诈骗、钓鱼攻击或其他违法犯罪活动；
 5. 侵犯他人知识产权或非法传播受版权保护的数字内容；
-6. 任何其他违反公序良俗、适用法律或服务商服务条款（ToS）的行为。
+6. 任何其他违反公序良俗、适用法律或服务商服务条款的行为。
 
 **如因用户违反上述承诺导致任何行政处罚、民事纠纷或刑事责任，均由用户自行承担全部后果。**
 
@@ -163,11 +158,11 @@ The developer may update this Disclaimer from time to time. Updated versions tak
 ### 六、 数据隐私与凭据安全
 
 1. **数据隐私**：除非产品文档另有说明，本工具在运行过程中默认不会主动收集、上传、分析或存储用户的代理数据或敏感通信内容。任何涉及此类数据的可选功能（例如流量统计、性能指标、错误报告、更新检查或版本检查）均默认关闭，仅在用户显式开启后才会生效。
-2. **凭据保护**：用户有责任妥善保护自己的服务器密钥、身份认证 Token、UUID、Private Key 以及订阅地址。因用户管理不当导致上述身份凭证泄露、滥用而造成的服务器流量耗尽、被窃听或侵入等损失，由用户自行承担。
+2. **凭据保护**：用户有责任妥善保护自己的服务器密钥、身份认证 Token、UUID、私钥以及订阅地址。因用户管理不当导致上述身份凭证泄露、滥用而造成的服务器流量耗尽、被窃听或侵入等损失，由用户自行承担。
 
 ### 七、 软件安全性与漏洞免责
 
-本工具按"现状"（as is）及"现有可用"（as available）状态提供，不附带任何明示或默示的担保，包括但不限于对适销性（merchantability）、特定用途适用性（fitness for a particular purpose）及不侵权（non-infringement）的担保。
+本软件按“现状”和“现有可用”状态提供，不提供任何明示或默示的保证或担保，包括但不限于关于商品适销性、特定用途适用性以及不侵犯任何第三方权利的保证或担保。
 
 开发者已采取合理措施保证软件的稳定与安全性，但受限于技术限制，开发者无法保证：
 
@@ -179,13 +174,13 @@ The developer may update this Disclaimer from time to time. Updated versions tak
 
 ### 八、 知识产权与开源协议
 
-1. 本工具源代码依据 MIT License 发布。除 MIT License 明确授予的权利外，源代码的著作权仍归开发者所有。
+1. 本工具源代码依据 MIT 许可证发布。除 MIT 许可证明确授予的权利外，源代码的著作权仍归开发者所有。
 2. 本工具中使用的第三方开源库、组件或依赖，其知识产权归各自权利人所有，并遵循其相应的开源许可证要求，用户在使用本工具时应一并遵守这些许可条款。
 3. 任何人不得将修改后的版本冒充为本工具的官方版本，或以本工具名义从事欺诈、虚假宣传或其他违法活动。
 
 ### 九、 商标
 
-本工具的项目名称、Logo、图标及相关品牌标识（如有）不属于 MIT License 的授权范围。未经许可，不得以任何方式暗示其为官方版本、获得官方认可或与开发者存在关联。
+本工具的项目名称、Logo、图标及相关品牌标识（如有）不属于 MIT 许可证的授权范围。未经许可，不得以任何方式暗示其为官方版本、获得官方认可或与开发者存在关联。
 
 ### 十、 责任限制、权利不放弃与可分割性
 
